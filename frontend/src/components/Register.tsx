@@ -50,12 +50,11 @@ const Register: React.FC<RegisterProps> = ({ onLogin, onSwitchToLogin }) => {
 
     return (
         <div className="min-h-[calc(100vh-200px)] flex items-center justify-center py-12 px-4">
-            <div className="bg-white dark:bg-[#221810] border-4 border-black dark:border-[#5D4037] p-8 rounded-xl shadow-retro-lg max-w-md w-full relative overflow-hidden">
+            <div className="bg-white dark:bg-[#221810] border-4 border-black dark:border-secondary p-8 rounded-xl shadow-retro-lg max-w-md w-full relative overflow-hidden">
                 <div className="absolute inset-0 pointer-events-none opacity-5 bg-[linear-gradient(transparent_50%,rgba(0,0,0,1)_50%)] bg-[length:100%_4px]"></div>
 
                 <div className="text-center mb-8">
-                    <h2 className="text-3xl font-bold text-primary mb-2 uppercase tracking-tighter">Formulario de Nuevo Miembro</h2>
-                    <p className="font-mono text-[#5D4037] dark:text-[#b9a89d] text-sm tracking-widest">ÚNETE AL CLUB</p>
+                    <h2 className="text-3xl font-bold text-primary mb-2 uppercase tracking-tighter">Formulario Registro</h2>
                 </div>
 
                 {error && (
@@ -66,7 +65,7 @@ const Register: React.FC<RegisterProps> = ({ onLogin, onSwitchToLogin }) => {
 
                 <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
                     <div>
-                        <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-1 text-[#5D4037] dark:text-[#b9a89d]">Usuario</label>
+                        <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-1 text-secondary dark:text-[#b9a89d]">Usuario</label>
                         <input
                             name="username"
                             type="text"
@@ -79,7 +78,7 @@ const Register: React.FC<RegisterProps> = ({ onLogin, onSwitchToLogin }) => {
                     </div>
 
                     <div>
-                        <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-1 text-[#5D4037] dark:text-[#b9a89d]">Email</label>
+                        <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-1 text-secondary dark:text-[#b9a89d]">Email</label>
                         <input
                             name="email"
                             type="email"
@@ -92,7 +91,7 @@ const Register: React.FC<RegisterProps> = ({ onLogin, onSwitchToLogin }) => {
                     </div>
 
                     <div>
-                        <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-1 text-[#5D4037] dark:text-[#b9a89d]">Contraseña</label>
+                        <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-1 text-secondary dark:text-[#b9a89d]">Contraseña</label>
                         <input
                             name="password"
                             type="password"
@@ -105,14 +104,14 @@ const Register: React.FC<RegisterProps> = ({ onLogin, onSwitchToLogin }) => {
                     </div>
 
                     <div>
-                        <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-[#5D4037] dark:text-[#b9a89d]">Rol</label>
+                        <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-secondary dark:text-[#b9a89d]">Rol</label>
                         <div className="grid grid-cols-3 gap-2">
                             {['saludable', 'aprendiz', 'chef'].map((r) => (
                                 <button
                                     key={r}
                                     type="button"
                                     onClick={() => setFormData({ ...formData, rol: r })}
-                                    className={`p-2 text-xs font-bold uppercase border-2 border-black dark:border-[#5D4037] transition-all
+                                    className={`p-2 text-xs font-bold uppercase border-2 border-black dark:border-secondary transition-all
                     ${formData.rol === r
                                             ? 'bg-primary text-white shadow-retro-sm'
                                             : 'bg-[#f0f0f0] text-black hover:bg-gray-200'}`}
@@ -128,17 +127,17 @@ const Register: React.FC<RegisterProps> = ({ onLogin, onSwitchToLogin }) => {
                         disabled={loading}
                         className="w-full bg-black hover:bg-[#2c241f] text-white font-bold uppercase py-3 border-2 border-transparent hover:border-black transition-all shadow-retro-sm active:translate-y-0.5 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {loading ? 'Inicializando...' : 'Iniciar Sesión'}
+                        {loading ? 'Inicializando...' : 'REGISTRARSE'}
                     </button>
                 </form>
 
                 <div className="mt-6 text-center border-t-2 border-black/10 dark:border-white/10 pt-4">
-                    <p className="text-xs font-mono text-[#5D4037] dark:text-[#b9a89d] mb-2">¿YA REGISTRADO?</p>
+                    <p className="text-xs font-mono text-secondary dark:text-[#b9a89d] mb-2">¿YA REGISTRADO?</p>
                     <button
                         onClick={onSwitchToLogin}
                         className="text-primary font-bold uppercase hover:underline text-sm tracking-widest"
                     >
-                        Acceder Terminal
+                        iniciar sesión
                     </button>
                 </div>
             </div>

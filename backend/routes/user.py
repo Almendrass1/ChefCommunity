@@ -164,6 +164,18 @@ def remove_from_collection(collection_id, recipe_id):
     return jsonify(collection.to_dict())
 
 
+@user_bp.route('/me/collections/<int:collection_id>', methods=['DELETE'])
+@jwt_required()
+def delete_collection(collection_id):
+    """Eliminar una colección completa"""
+    current_user_id = get_jwt_identity()
+    collection = RecipeCollection.query.filter_by(id=collection_id, user_id=current_user_id).first_or_404()
+    
+    db.session.delete(collection)
+    db.session.commit()
+    return jsonify({'message': 'Colección eliminada'}), 200
+
+
 @user_bp.route('/me/shopping-list/generate', methods=['POST'])
 @jwt_required()
 def generate_shopping_list():
@@ -237,3 +249,116 @@ def generate_shopping_list():
     
     # db.session.commit()
     return jsonify(shopping_list)
+
+
+@user_bp.route('/me/collections/<int:collection_id>/shopping-list', methods=['POST'])
+@jwt_required()
+def generate_collection_shopping_list(collection_id):
+    """Generar lista de compra basada en una colección específica - stock"""
+    current_user_id = get_jwt_identity()
+    collection = RecipeCollection.query.filter_by(id=collection_id, user_id=current_user_id).first_or_404()
+    
+    needed_ingredients = {}
+    
+    # 1. Sumar ingredientes de las recetas de la colección
+    for recipe in collection.recipes:
+        for ri in recipe.ingredients:
+            if ri.ingredient_id in needed_ingredients:
+                needed_ingredients[ri.ingredient_id]['qty'] += float(ri.quantity)
+            else:
+                needed_ingredients[ri.ingredient_id] = {
+                    'name': ri.ingredient.name,
+                    'qty': float(ri.quantity),
+                    'unit': ri.ingredient.unit
+                }
+    
+    # 2. Restar stock del usuario
+    user_stock = UserStock.query.filter_by(user_id=current_user_id).all()
+    for stock in user_stock:
+        if stock.ingredient_id in needed_ingredients:
+             needed_ingredients[stock.ingredient_id]['qty'] -= float(stock.quantity)
+    
+    # 3. Generar lista final (solo positivos)
+    shopping_list = []
+    for ing_id, data in needed_ingredients.items():
+        if data['qty'] > 0:
+            unit = data['unit'] if data['unit'] else 'ud'
+            qty = data['qty']
+            
+            unit_lower = unit.lower()
+            if unit_lower in ['oz', 'onza']: qty = qty * 28.35; unit = 'g'
+            elif unit_lower in ['lb', 'libra']: 
+                qty = qty * 453.59; unit = 'g'
+                if qty >= 1000: qty /= 1000; unit = 'kg'
+            
+            qty_display = round(qty, 2) if qty % 1 else int(qty)
+            shopping_list.append({
+                'name': data['name'],
+                'quantity': f"{qty_display} {unit}",
+                'status': 'needed'
+            })
+    
+    return jsonify(shopping_list)
+@user_bp.route('/me', methods=['PUT'])
+@jwt_required()
+def update_profile():
+    """Actualiza el perfil del usuario actual"""
+    import os
+    from werkzeug.utils import secure_filename
+    from flask import current_app
+    from datetime import datetime
+    import bcrypt
+
+    current_user_id = get_jwt_identity()
+    user = User.query.get_or_404(current_user_id)
+    
+    if request.content_type and request.content_type.startswith('multipart/form-data'):
+        data = request.form
+        files = request.files
+    else:
+        data = request.get_json()
+        files = {}
+
+    try:
+        # Update text fields
+        if 'username' in data and data['username']:
+            # Check if username is taken by another user
+            existing = User.query.filter(User.username == data['username'], User.id != user.id).first()
+            if existing:
+                return jsonify({'error': 'Nombre de usuario ya está en uso'}), 409
+            user.username = data['username']
+            
+        if 'bio' in data:
+            user.bio = data['bio']
+            
+        if 'rol' in data:
+            # Basic validation for roles
+            if data['rol'] in ['saludable', 'aprendiz', 'chef', 'admin']:
+                user.rol = data['rol']
+                
+        if 'password' in data and data['password']:
+            hashed = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
+            user.password = hashed.decode('utf-8')
+
+        # Handle Avatar Upload
+        if 'avatar' in files:
+            file = files['avatar']
+            if file and file.filename:
+                upload_folder = os.path.join(current_app.root_path, 'static', 'uploads', 'avatars')
+                os.makedirs(upload_folder, exist_ok=True)
+                
+                filename = secure_filename(f"avatar_{user.id}_{int(datetime.utcnow().timestamp())}_{file.filename}")
+                file.save(os.path.join(upload_folder, filename))
+                user.avatar_url = f"/static/uploads/avatars/{filename}"
+        elif 'avatar_url' in data:
+             user.avatar_url = data['avatar_url']
+
+        db.session.commit()
+        return jsonify({
+            'message': 'Perfil actualizado correctamente',
+            'user': user.to_dict()
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500

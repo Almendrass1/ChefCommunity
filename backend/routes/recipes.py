@@ -9,7 +9,9 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 from sqlalchemy import func, desc
 from datetime import datetime
-from models import db, Recipe, User, Like, RecipeIngredient, Ingredient, Follow
+from sqlalchemy.orm import joinedload
+from models import db, Recipe, User, Like, RecipeIngredient, Ingredient, Follow, RecipeStep
+
 
 recipes_bp = Blueprint('recipes', __name__)
 
@@ -33,9 +35,12 @@ def get_recipes():
     author_id = request.args.get('author_id')
     difficulty = request.args.get('difficulty')
     ingredients = request.args.get('ingredients')
+    fridge = request.args.get('fridge') == 'true'
+    max_time = request.args.get('max_time')
     sort = request.args.get('sort', 'newest')
     
-    query = Recipe.query
+    query = Recipe.query.options(joinedload(Recipe.ingredients))
+
     
     # Filtros básicos
     if category:
@@ -46,17 +51,47 @@ def get_recipes():
         query = query.filter(Recipe.author_id == int(author_id))
     if difficulty:
         query = query.filter(Recipe.difficulty == difficulty)
+    if max_time:
+        query = query.filter(Recipe.prep_time <= int(max_time))
         
-    # Filtro por ingredientes (encuesta/despensa)
+    available_ingredient_names = set()
+    
+    # 1. Obtener de query params (Manual)
     if ingredients:
-        ing_list = [i.strip() for i in ingredients.split(',')]
-        if ing_list:
-            # Subquery para encontrar recetas que tienen AL MENOS UNO de los ingredientes
-            # Ojo: para "todos" los ingredientes sería más complejo (intersection)
-            query = query.join(RecipeIngredient).join(Ingredient).filter(Ingredient.name.in_(ing_list))
+        manual_ings = [i.strip().lower() for i in ingredients.split(',')]
+        available_ingredient_names.update(manual_ings)
+        
+    # 2. Obtener de despensa (Automático)
+    try:
+        verify_jwt_in_request(optional=True)
+        current_user_id = get_jwt_identity()
+        if current_user_id:
+            from models import UserStock
+            user_stock = UserStock.query.filter_by(user_id=current_user_id).all()
+            available_ingredient_names.update([s.ingredient.name.lower() for s in user_stock if s.ingredient])
+    except Exception as e:
+        print(f"Error reading stock: {e}")
+
+    # Filtro inclusivo: mostrar recetas que contengan AL MENOS UNO de los ingredientes disponibles
+    if fridge or ingredients:
+        if available_ingredient_names:
+            query = query.join(RecipeIngredient).join(Ingredient).filter(func.lower(Ingredient.name).in_(list(available_ingredient_names)))
+            # Asegurar que no haya duplicados si una receta coincide con varios ingredientes
+            query = query.distinct()
     
     # Ordenamiento
-    if sort == 'likes':
+    if sort == 'rating':
+        # Subquery para calcular el promedio de rating de cada receta
+        from models import Review
+        rating_subquery = db.session.query(
+            Review.recipe_id,
+            func.avg(Review.rating).label('avg_rating')
+        ).group_by(Review.recipe_id).subquery()
+        
+        # Ordenar por el promedio de rating (mayor a menor)
+        query = query.outerjoin(rating_subquery, Recipe.id == rating_subquery.c.recipe_id).order_by(desc('avg_rating'))
+        
+    elif sort == 'likes':
         # Left outer join con likes para contar
         subquery = db.session.query(
             Like.recipe_id, 
@@ -80,16 +115,28 @@ def get_recipes():
         except:
             query = query.order_by(Recipe.created_at.desc())
             
-    else: # newest
-        query = query.order_by(Recipe.created_at.desc())
-    
     # Ejecutar
-    recipes = query.all()
+    recipes_results = query.all()
     
     # Eliminar duplicados si el join de ingredientes trajo múltiples filas por receta
-    recipes = list({r.id: r for r in recipes}.values())
+    unique_recipes = list({r.id: r for r in recipes_results}.values())
     
-    return jsonify([r.to_dict() for r in recipes])
+    # Procesar resultados para incluir metadatos de "lo que falta"
+    recipe_list = []
+    for r in unique_recipes:
+        data = r.to_dict()
+        
+        # Calcular ingredientes faltantes
+        # r.ingredients es una lista de RecipeIngredient, cada uno tiene .ingredient.name
+        recipe_ing_names = [ri.ingredient.name.lower() for ri in r.ingredients if ri.ingredient]
+        missing = [name for name in recipe_ing_names if name not in available_ingredient_names]
+        
+        data['missing_ingredients'] = missing
+        data['is_complete'] = len(missing) == 0
+        
+        recipe_list.append(data)
+        
+    return jsonify(recipe_list)
 
 
 @recipes_bp.route('/<int:recipe_id>', methods=['GET'])
@@ -100,8 +147,8 @@ def get_recipe(recipe_id):
     current_user_id = get_jwt_identity()
     
     recipe_data = recipe.to_dict()
-    recipe_data['ingredients'] = [ri.to_dict() for ri in recipe.ingredients]
     recipe_data['reviews'] = [r.to_dict() for r in recipe.reviews]
+
     
     is_liked = False
     if current_user_id:
@@ -251,8 +298,36 @@ def create_recipe():
                     
             except Exception as e:
                 print(f"ERROR processing ingredients: {e}", file=sys.stderr, flush=True)
-                # Don't fail the whole recipe creation? Or do we?
-                # For now let's just log and continue
+
+        # Process Steps
+        steps_json = data.get('steps')
+        if steps_json:
+            try:
+                steps_list = json.loads(steps_json)
+                for i, step_data in enumerate(steps_list):
+                    step_text = step_data.get('text', '').strip()
+                    if not step_text:
+                        continue
+                    
+                    # Check for step image in files
+                    step_image_url = None
+                    file_key = f'step_image_{i}'
+                    if file_key in files:
+                        file = files[file_key]
+                        if file and file.filename:
+                            filename = secure_filename(f"step_{new_recipe.id}_{i}_{int(datetime.utcnow().timestamp())}_{file.filename}")
+                            file.save(os.path.join(upload_folder, filename))
+                            step_image_url = f"/static/uploads/{filename}"
+                    
+                    new_step = RecipeStep(
+                        recipe_id=new_recipe.id,
+                        step_number=i + 1,
+                        text=step_text,
+                        image_url=step_image_url
+                    )
+                    db.session.add(new_step)
+            except Exception as e:
+                print(f"ERROR processing steps: {e}", file=sys.stderr, flush=True)
         
         db.session.commit()
         
@@ -287,12 +362,41 @@ def update_recipe(recipe_id):
     if recipe.author_id != user_id_int and not is_admin:
         return jsonify({'error': 'No autorizado'}), 403
     
-    data = request.get_json()
+    # Check if request has files or is just JSON
+    if request.content_type and request.content_type.startswith('multipart/form-data'):
+        data = request.form
+        files = request.files
+    else:
+        data = request.get_json()
+        files = {}
     
-    fields = ['title', 'description', 'instructions', 'category', 'video_url', 'main_image_url', 'difficulty', 'prep_time', 'calories']
+    fields = ['title', 'description', 'instructions', 'category', 'difficulty', 'prep_time', 'calories']
     for field in fields:
         if field in data:
             setattr(recipe, field, data[field])
+            
+    # Handle File Uploads in Update
+    import os
+    from werkzeug.utils import secure_filename
+    from flask import current_app
+    from datetime import datetime
+
+    upload_folder = os.path.join(current_app.root_path, 'static', 'uploads')
+    os.makedirs(upload_folder, exist_ok=True)
+
+    if 'main_image' in files:
+        file = files['main_image']
+        if file and file.filename:
+            filename = secure_filename(f"upd_{current_user_id}_{int(datetime.utcnow().timestamp())}_{file.filename}")
+            file.save(os.path.join(upload_folder, filename))
+            recipe.main_image_url = f"/static/uploads/{filename}"
+
+    if 'video' in files:
+        file = files['video']
+        if file and file.filename:
+            filename = secure_filename(f"upd_vid_{current_user_id}_{int(datetime.utcnow().timestamp())}_{file.filename}")
+            file.save(os.path.join(upload_folder, filename))
+            recipe.video_url = f"/static/uploads/{filename}"
     
     db.session.commit()
     
@@ -368,6 +472,48 @@ def update_recipe(recipe_id):
             print(f"ERROR updating ingredients: {e}", file=sys.stderr, flush=True)
             return jsonify({'error': str(e)}), 500
 
+    # Update Steps if provided
+    if 'steps' in data:
+        try:
+            # Clear existing steps
+            RecipeStep.query.filter_by(recipe_id=recipe.id).delete()
+            
+            steps_json = data['steps']
+            if isinstance(steps_json, str):
+                steps_list = json.loads(steps_json)
+            else:
+                steps_list = steps_json
+            
+            for i, step_data in enumerate(steps_list):
+                step_text = step_data.get('text', '').strip()
+                if not step_text:
+                    continue
+                
+                # Check for new image or keep existing
+                step_image_url = step_data.get('image_url') # Preserve existing if no new one
+                file_key = f'step_image_{i}'
+                
+                if file_key in files:
+                    file = files[file_key]
+                    if file and file.filename:
+                        filename = secure_filename(f"step_{recipe.id}_{i}_{int(datetime.utcnow().timestamp())}_{file.filename}")
+                        file.save(os.path.join(upload_folder, filename))
+                        step_image_url = f"/static/uploads/{filename}"
+                
+                new_step = RecipeStep(
+                    recipe_id=recipe.id,
+                    step_number=i + 1,
+                    text=step_text,
+                    image_url=step_image_url
+                )
+                db.session.add(new_step)
+            
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            print(f"ERROR updating steps: {e}", file=sys.stderr, flush=True)
+            return jsonify({'error': str(e)}), 500
+
     # Return full recipe including ingredients
     recipe_data = recipe.to_dict()
     recipe_data['ingredients'] = [ri.to_dict() for ri in recipe.ingredients]
@@ -426,3 +572,63 @@ def toggle_like(recipe_id):
         'action': action,
         'likes_count': likes_count
     })
+
+
+@recipes_bp.route('/<int:recipe_id>/reviews', methods=['POST'])
+@jwt_required()
+def add_review(recipe_id):
+    """Añade o actualiza una valoración y comentario con soporte para imágenes"""
+    import os
+    from werkzeug.utils import secure_filename
+    from flask import current_app
+    
+    current_user_id = get_jwt_identity()
+    
+    # Soporte para JSON o Multipart (para imágenes)
+    if request.content_type and request.content_type.startswith('multipart/form-data'):
+        data = request.form
+        files = request.files
+    else:
+        data = request.get_json()
+        files = {}
+    
+    rating = data.get('rating')
+    comment = data.get('comment', '').strip()
+    
+    if not rating or not (1 <= int(rating) <= 5):
+        return jsonify({'error': 'La calificación debe estar entre 1 y 5'}), 400
+        
+    recipe = Recipe.query.get_or_404(recipe_id)
+    
+    # Procesar Imagen si existe
+    image_url = None
+    if 'image' in files:
+        file = files['image']
+        if file and file.filename:
+            upload_folder = os.path.join(current_app.root_path, 'static', 'uploads', 'reviews')
+            os.makedirs(upload_folder, exist_ok=True)
+            filename = secure_filename(f"rev_{recipe_id}_{current_user_id}_{int(datetime.utcnow().timestamp())}_{file.filename}")
+            file.save(os.path.join(upload_folder, filename))
+            image_url = f"/static/uploads/reviews/{filename}"
+
+    # Buscar si ya existe una review de este usuario para esta receta
+    from models import Review
+    review = Review.query.filter_by(user_id=current_user_id, recipe_id=recipe_id).first()
+    
+    if review:
+        review.rating = int(rating)
+        review.comment = comment
+        if image_url: review.image_url = image_url
+        review.created_at = datetime.utcnow()
+    else:
+        review = Review(
+            user_id=current_user_id,
+            recipe_id=recipe_id,
+            rating=int(rating),
+            comment=comment,
+            image_url=image_url
+        )
+        db.session.add(review)
+        
+    db.session.commit()
+    return jsonify(review.to_dict()), 201

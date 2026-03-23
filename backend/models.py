@@ -77,10 +77,15 @@ class Recipe(db.Model):
     
     # Relaciones
     ingredients = db.relationship('RecipeIngredient', backref='recipe', lazy=True, cascade='all, delete-orphan')
+    steps = db.relationship('RecipeStep', backref='recipe', lazy=True, cascade='all, delete-orphan', order_by='RecipeStep.step_number')
     reviews = db.relationship('Review', backref='recipe', lazy=True, cascade='all, delete-orphan')
     likes = db.relationship('Like', backref='recipe', lazy=True, cascade='all, delete-orphan')
     
-    def to_dict(self, include_author=True):
+    def to_dict(self, include_author=True, include_ingredients=True):
+        # Calcular calificación promedio
+        ratings = [r.rating for r in self.reviews if r.rating]
+        avg_rating = sum(ratings) / len(ratings) if ratings else 0
+        
         data = {
             'id': self.id,
             'title': self.title,
@@ -94,12 +99,41 @@ class Recipe(db.Model):
             'calories': self.calories,
             'author_id': self.author_id,
             'likes_count': len(self.likes),
+            'avg_rating': round(avg_rating, 1),
+            'reviews_count': len(ratings),
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
         if include_author and self.author_user:
             data['author'] = self.author_user.username
             data['author_avatar'] = self.author_user.avatar_url
+            
+        if include_ingredients:
+            data['ingredients'] = [i.to_dict() for i in self.ingredients]
+            
+        # Incluir pasos estructurados
+        data['steps'] = [s.to_dict() for s in self.steps]
+            
         return data
+
+
+
+class RecipeStep(db.Model):
+    """Modelo de pasos de preparación con imágenes"""
+    __tablename__ = 'recipe_steps'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'), nullable=False)
+    step_number = db.Column(db.Integer, nullable=False)
+    text = db.Column(db.Text, nullable=False)
+    image_url = db.Column(db.String(255))
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'step_number': self.step_number,
+            'text': self.text,
+            'image_url': self.image_url
+        }
 
 
 class RecipeIngredient(db.Model):
@@ -208,6 +242,7 @@ class Review(db.Model):
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'), nullable=False)
     rating = db.Column(db.SmallInteger)  # 1-5
     comment = db.Column(db.Text)
+    image_url = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     
     # Relación con usuario
@@ -218,9 +253,11 @@ class Review(db.Model):
             'id': self.id,
             'user_id': self.user_id,
             'username': self.user.username if self.user else None,
+            'user_avatar': self.user.avatar_url if self.user else None,
             'recipe_id': self.recipe_id,
             'rating': self.rating,
             'comment': self.comment,
+            'image_url': self.image_url,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
 

@@ -1,0 +1,6 @@
+recipes Error: OperationalError
+Failed to add 'calories': (pymysql.err.OperationalError) (2003, "Can't connect to MySQL server on 'localhost' ([WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión)")
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+users Error: OperationalError
+Failed to add columns to users: (pymysql.err.OperationalError) (2003, "Can't connect to MySQL server on 'localhost' ([WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión)")
+(Background on this error at: https://sqlalche.me/e/20/e3q8)

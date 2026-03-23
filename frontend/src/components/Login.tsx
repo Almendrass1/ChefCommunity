@@ -39,13 +39,13 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister }) => {
 
     return (
         <div className="min-h-[calc(100vh-200px)] flex items-center justify-center py-12 px-4">
-            <div className="bg-white dark:bg-[#221810] border-4 border-black dark:border-[#5D4037] p-8 rounded-xl shadow-retro-lg max-w-md w-full relative overflow-hidden">
+            <div className="bg-white dark:bg-[#221810] border-4 border-black dark:border-secondary p-8 rounded-xl shadow-retro-lg max-w-md w-full relative overflow-hidden">
                 {/* VHS Scanline */}
-                <div className="absolute inset-0 pointer-events-none opacity-5 bg-[linear-gradient(transparent_50%,rgba(0,0,0,1)_50%)] bg-[length:100%_4px]"></div>
+                <div className="absolute inset-0 pointer-events-none opacity-5 bg-[linear-gradient(transparent_50%,rgba(0,0,0,1)_50%)] bg-size-[100%_4px]"></div>
 
                 <div className="text-center mb-8">
-                    <h2 className="text-4xl font-bold text-primary mb-2 glitch-text" data-text="INSERTAR CINTA">INSERTAR CINTA</h2>
-                    <p className="font-mono text-[#5D4037] dark:text-[#b9a89d] text-sm tracking-widest">AUTORIZACIÓN REQUERIDA</p>
+                    <h2 className="text-4xl font-bold text-primary mb-2" data-text="INSERTAR CINTA">INICIAR SESIÓN</h2>
+                    <p className="font-mono text-secondary dark:text-[#b9a89d] text-sm tracking-widest">autorización requerida</p>
                 </div>
 
                 {error && (
@@ -57,8 +57,8 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister }) => {
 
                 <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
                     <div>
-                        <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-[#5D4037] dark:text-[#b9a89d]">
-                            ID Operador (Email)
+                        <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-secondary dark:text-[#b9a89d]">
+                            Email
                         </label>
                         <input
                             type="email"
@@ -71,8 +71,8 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister }) => {
                     </div>
 
                     <div>
-                        <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-[#5D4037] dark:text-[#b9a89d]">
-                            Código de Acceso (Contraseña)
+                        <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-secondary dark:text-[#b9a89d]">
+                            Contraseña
                         </label>
                         <input
                             type="password"
@@ -93,20 +93,20 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister }) => {
                             <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                         ) : (
                             <>
-                                <span className="material-symbols-outlined text-lg">play_arrow</span>
+                                <span translate="no" className="material-symbols-outlined notranslate text-lg">play_arrow</span>
                                 Iniciar Sesión
                             </>
                         )}
                     </button>
                 </form>
 
-                <div className="mt-8 text-center border-t-2 border-dashed border-[#5D4037]/30 pt-6">
-                    <p className="font-mono text-xs text-[#5D4037] dark:text-[#b9a89d] mb-3">¿NUEVO USUARIO?</p>
+                <div className="mt-8 text-center border-t-2 border-dashed border-secondary/30 pt-6">
+                    <p className="font-mono text-xs text-secondary dark:text-[#b9a89d] mb-3">¿NUEVO USUARIO?</p>
                     <button
                         onClick={onSwitchToRegister}
                         className="text-primary font-bold uppercase text-sm hover:underline tracking-wide decoration-2 underline-offset-4"
                     >
-                        Crear Nuevo Perfil
+                        Registrarse
                     </button>
                 </div>
             </div>

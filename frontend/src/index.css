@@ -11,49 +11,144 @@
   /* Paleta de colores solicitada */
   --color-primary: #ec6d13;
   --color-secondary: #5D4037;
-  --color-background-light: #fdfbf7;
+  --color-background-light: #fffbeb;
   --color-background-dark: #1a1614;
   --color-vhs-black: #111111;
   --color-retro-green: #39ff14;
+
+  /* Colores retro adicionales usados en componentes */
+  --color-olive: #808000;
+  --color-cream: #F5F5DC;
+  --color-mustard: #E1AD01;
+  --color-chocolate: #5D4037;
+  --color-rust: #8B4513;
+  --color-burnt-orange: #ec6d13;
+  --color-chocolate-light: #8B735B;
 
   /* Fuentes */
   --font-display: 'Space Grotesk', sans-serif;
   --font-mono: 'Courier Prime', 'Courier New', monospace;
 
-  /* Sombras */
-  --shadow-retro: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  /* Sombras Premium */
+  --shadow-retro: 4px 4px 0px 0px rgba(0, 0, 0, 1), 8px 8px 0px 0px rgba(0, 0, 0, 0.2);
   --shadow-retro-sm: 2px 2px 0px 0px rgba(0, 0, 0, 1);
-  --shadow-retro-lg: 8px 8px 0px 0px rgba(236, 109, 19, 0.5);
+  --shadow-retro-lg: 8px 8px 0px 0px rgba(236, 109, 19, 0.5), 12px 12px 0px 0px rgba(0, 0, 0, 0.3);
+  --shadow-retro-glow: 0 0 15px rgba(236, 109, 19, 0.4);
 
   /* Backgrounds */
   --image-noise: url('https://grainy-gradients.vercel.app/noise.svg');
   --image-lined-paper: repeating-linear-gradient(#FDFBF7, #FDFBF7 31px, #94a3b8 32px);
 }
 
+@utility glass-retro {
+  background: rgba(26, 22, 20, 0.80);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+}
+
+@utility glow-primary {
+  box-shadow: 0 0 20px rgba(236, 109, 19, 0.3);
+}
+
 /* Efectos VHS y Glitch */
-@layer utilities {
-  .scanlines {
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.1));
-    background-size: 100% 4px;
-    animation: scanline 10s linear infinite;
-    pointer-events: none;
-  }
+@utility scanlines {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.1));
+  background-size: 100% 4px;
+  animation: scanline 10s linear infinite;
+  pointer-events: none;
+}
 
-  .glitch-text {
-    animation: glitch 1s linear infinite;
-  }
+@utility glitch-text {
+  animation: glitch 1s linear infinite;
+}
 
-  .retro-checkbox {
-    appearance: none;
-    background-color: white;
-    margin: 0;
-  }
+@utility vhs-badge {
+  @apply bg-vhs-black text-retro-green font-mono text-xs px-2 py-0.5 border-2 border-retro-green/50 skew-x-[-10deg] italic font-bold;
+}
 
-  .retro-checkbox:checked {
-    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCgLtrcaYRrO87M_h68uKSvYCmIwYqb0xQ-KLbaZ6sR7hW9LKif9-DoH9GQ_kpHouHNekJqtP1N51SE8CgVxj_ejU4Ziu8GaPDyaEzfUuPZv3ju1Kp6ny6pb_YwQMreC7L4AQfFZyHSj9ZLueEbRE48q3DrSBLhsZmVeTYxjdMRjX1Kv88WMkTCz5trWMeDZukwx1Wcatpp34UGGYD1aBQgt8qdD731gD4FrzPZkKiqfHLK2cmiYW_sZIwyTmZRFlwX3cKvjFMYFa0);
+@utility animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+@utility text-display {
+  font-family: var(--font-display);
+}
+
+@utility text-body {
+  font-family: var(--font-display);
+}
+
+@utility retro-checkbox {
+  appearance: none;
+  background-color: white;
+  margin: 0;
+
+  &:checked {
+    background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCgLtrcaYRrO87M_h68uKSvYCmIwYqb0xQ-KLbaZ6sR7hW9LKif9-DoH9GQ_kpHouHNekJqtP1N51SE8CgVxj_ejU4Ziu8GaPDyaEzfUuPZv3ju1Kp6ny6pb_YwQMreC7L4AQfFZyHSj9ZLueEbRE48q3DrSBLhsZmVeTYxjdMRjX1Kv88WMkTCz5trWMeDZukwx1Wcatpp34UGGYD1aBQgt8qdD731gD4FrzPZkKiqfHLK2cmiYW_sZIwyTmZRFlwX3cKvjFMYFa0");
     background-size: cover;
     border-color: black;
     background-color: var(--color-primary);
+  }
+}
+
+/* ====================================
+   Componentes Semánticos (Utilities)
+   ==================================== */
+@utility btn-retro {
+  @apply flex items-center justify-center border-2 border-black font-bold uppercase tracking-widest transition-all duration-200 shadow-retro-sm active:translate-y-0.5 active:shadow-none;
+}
+
+@utility btn-primary {
+  @apply btn-retro bg-primary text-white hover:bg-[#d95d00] shadow-[0_4px_0_#000];
+}
+
+@utility btn-cancel {
+  @apply btn-retro bg-[#d1d5db] text-black hover:bg-white shadow-[0_4px_0_#000];
+}
+
+@utility btn-secondary {
+  @apply btn-retro bg-secondary text-white hover:opacity-90;
+}
+
+@utility btn-ghost {
+  @apply btn-retro bg-white text-black hover:bg-gray-100;
+}
+
+@utility card-retro {
+  @apply bg-background-light dark:bg-[#221810] border-2 border-secondary/20 dark:border-secondary p-8 rounded-2xl shadow-retro-lg overflow-hidden transition-all duration-300 dark:text-gray-100;
+}
+
+@utility card-vhs {
+  @apply bg-[#1a140f] border-2 border-black p-10 rounded-3xl shadow-retro-lg relative overflow-hidden;
+}
+
+@utility input-retro {
+  @apply w-full bg-[#efefef] dark:bg-[#302018] text-black dark:text-white border-2 border-black/10 dark:border-secondary p-4 font-mono text-center focus:outline-none focus:bg-white focus:border-primary transition-all placeholder:text-gray-400;
+}
+
+@utility form-label {
+  @apply block text-[11px] font-mono font-bold uppercase tracking-[0.25em] mb-3 text-secondary/70 dark:text-gray-400 text-center;
+}
+
+@utility badge-retro {
+  @apply px-4 py-1.5 bg-white text-black border-2 border-black/5 rounded-full font-bold text-xs flex items-center gap-2 shadow-sm;
+}
+
+@utility textarea-dark {
+  @apply w-full bg-[#302018] text-white border-2 border-black p-6 font-mono focus:border-primary focus:outline-none h-64 text-lg shadow-inner resize-none;
+}
+
+@utility vhs-tag {
+  @apply bg-vhs-black text-retro-green font-mono text-[10px] px-1.5 py-0.5 border border-retro-green/30 animate-pulse;
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 
@@ -84,11 +179,26 @@
   }
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Reset y Base */
 body {
   font-family: var(--font-display);
   background-color: var(--color-background-light);
-  color: #181411;
+  color: var(--color-vhs-black);
+  overflow-x: hidden;
+  margin: 0;
+
 }
 
 /* Soporte Dark Mode */
@@ -99,9 +209,22 @@ body {
 
 /* Material Symbols Adjustments */
 .material-symbols-outlined {
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
   font-variation-settings:
     'FILL' 0,
     'wght' 400,
     'GRAD' 0,
-    'opsz' 24
+    'opsz' 24;
 }
