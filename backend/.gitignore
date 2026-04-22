@@ -11,6 +11,7 @@ __pycache__/
 node_modules/
 dist/
 
-# Imágenes subidas (para que no pesen en el repo)
+# Imágenes subidas (para que no pesen en el repositorio)
 backend/static/uploads/*
 !backend/static/uploads/.gitkeep
+
