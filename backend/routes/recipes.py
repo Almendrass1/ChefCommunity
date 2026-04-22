@@ -39,20 +39,15 @@ def get_recipes():
     max_time = request.args.get('max_time')
     sort = request.args.get('sort', 'newest')
     
-    query = Recipe.query.options(joinedload(Recipe.ingredients))
+    base_query = Recipe.query.options(joinedload(Recipe.ingredients))
 
-    
-    # Filtros básicos
-    if category:
-        query = query.filter(Recipe.category == category)
-    if search:
-        query = query.filter(Recipe.title.ilike(f'%{search}%'))
+    # Filtros básicos (strict)
     if author_id:
-        query = query.filter(Recipe.author_id == int(author_id))
+        base_query = base_query.filter(Recipe.author_id == int(author_id))
     if difficulty:
-        query = query.filter(Recipe.difficulty == difficulty)
+        base_query = base_query.filter(Recipe.difficulty == difficulty)
     if max_time:
-        query = query.filter(Recipe.prep_time <= int(max_time))
+        base_query = base_query.filter(Recipe.prep_time <= int(max_time))
         
     available_ingredient_names = set()
     
@@ -72,71 +67,94 @@ def get_recipes():
     except Exception as e:
         print(f"Error reading stock: {e}")
 
-    # Filtro inclusivo: mostrar recetas que contengan AL MENOS UNO de los ingredientes disponibles
+    primary_query = base_query
+    
+    if category:
+        primary_query = primary_query.filter(Recipe.category == category)
+    if search:
+        primary_query = primary_query.filter(Recipe.title.ilike(f'%{search}%'))
+
+    # Filtro inclusivo para primary
     if fridge or ingredients:
         if available_ingredient_names:
-            query = query.join(RecipeIngredient).join(Ingredient).filter(func.lower(Ingredient.name).in_(list(available_ingredient_names)))
-            # Asegurar que no haya duplicados si una receta coincide con varios ingredientes
-            query = query.distinct()
+            from sqlalchemy import or_
+            filters = [Ingredient.name.ilike(f'%{name}%') for name in available_ingredient_names]
+            primary_query = primary_query.join(RecipeIngredient).join(Ingredient).filter(or_(*filters)).distinct()
     
     # Ordenamiento
     if sort == 'rating':
-        # Subquery para calcular el promedio de rating de cada receta
         from models import Review
         rating_subquery = db.session.query(
             Review.recipe_id,
             func.avg(Review.rating).label('avg_rating')
         ).group_by(Review.recipe_id).subquery()
-        
-        # Ordenar por el promedio de rating (mayor a menor)
-        query = query.outerjoin(rating_subquery, Recipe.id == rating_subquery.c.recipe_id).order_by(desc('avg_rating'))
-        
+        primary_query = primary_query.outerjoin(rating_subquery, Recipe.id == rating_subquery.c.recipe_id).order_by(desc('avg_rating'))
     elif sort == 'likes':
-        # Left outer join con likes para contar
         subquery = db.session.query(
             Like.recipe_id, 
             func.count('*').label('like_count')
         ).group_by(Like.recipe_id).subquery()
-        
-        query = query.outerjoin(subquery, Recipe.id == subquery.c.recipe_id).order_by(desc('like_count'))
-        
+        primary_query = primary_query.outerjoin(subquery, Recipe.id == subquery.c.recipe_id).order_by(desc('like_count'))
     elif sort == 'following':
-        # Requiere auth opcional
         try:
             verify_jwt_in_request(optional=True)
             current_user_id = get_jwt_identity()
             if current_user_id:
-                # Subquery de usuarios seguidos
                 followed_subquery = db.session.query(Follow.followed_id).filter(Follow.follower_id == current_user_id).subquery()
-                query = query.filter(Recipe.author_id.in_(followed_subquery)).order_by(Recipe.created_at.desc())
+                primary_query = primary_query.filter(Recipe.author_id.in_(followed_subquery)).order_by(Recipe.created_at.desc())
             else:
-                # Si no está logueado, fallback a newest
-                query = query.order_by(Recipe.created_at.desc())
+                primary_query = primary_query.order_by(Recipe.created_at.desc())
         except:
-            query = query.order_by(Recipe.created_at.desc())
+            primary_query = primary_query.order_by(Recipe.created_at.desc())
+
+    primary_results = primary_query.all()
+    
+    # Sugerencias AI: si buscaron algo escrito/categoría + nevera, sugerimos otras que se pueden hacer con su nevera
+    suggestions_results = []
+    if (category or search) and (fridge or ingredients) and available_ingredient_names:
+        primary_ids = [r.id for r in primary_results]
+        from sqlalchemy import or_
+        sugg_filters = [Ingredient.name.ilike(f'%{name}%') for name in available_ingredient_names]
+        suggestion_query = base_query.join(RecipeIngredient).join(Ingredient).filter(or_(*sugg_filters)).distinct()
+        if primary_ids:
+            suggestion_query = suggestion_query.filter(~Recipe.id.in_(primary_ids))
+        suggestions_results = suggestion_query.all()
+
+    def process_and_sort(results, is_suggestion=False):
+        def is_matched(recipe_name, avail_names):
+            for avail in avail_names:
+                if avail in recipe_name or recipe_name in avail:
+                    return True
+            return False
+
+        processed = []
+        unique_results = list({r.id: r for r in results}.values())
+        for r in unique_results:
+            data = r.to_dict()
+            recipe_ing_names = [ri.ingredient.name.lower() for ri in r.ingredients if ri.ingredient]
+            missing = [name for name in recipe_ing_names if not is_matched(name, available_ingredient_names)]
             
-    # Ejecutar
-    recipes_results = query.all()
-    
-    # Eliminar duplicados si el join de ingredientes trajo múltiples filas por receta
-    unique_recipes = list({r.id: r for r in recipes_results}.values())
-    
-    # Procesar resultados para incluir metadatos de "lo que falta"
-    recipe_list = []
-    for r in unique_recipes:
-        data = r.to_dict()
-        
-        # Calcular ingredientes faltantes
-        # r.ingredients es una lista de RecipeIngredient, cada uno tiene .ingredient.name
-        recipe_ing_names = [ri.ingredient.name.lower() for ri in r.ingredients if ri.ingredient]
-        missing = [name for name in recipe_ing_names if name not in available_ingredient_names]
-        
-        data['missing_ingredients'] = missing
-        data['is_complete'] = len(missing) == 0
-        
-        recipe_list.append(data)
-        
-    return jsonify(recipe_list)
+            data['missing_ingredients'] = missing
+            data['is_complete'] = len(missing) == 0
+            data['is_suggestion'] = is_suggestion
+            
+            matching_count = len(recipe_ing_names) - len(missing)
+            data['_matching_count'] = matching_count
+            
+            processed.append(data)
+            
+        if fridge or ingredients:
+            processed.sort(key=lambda x: x['_matching_count'], reverse=True)
+            
+        for d in processed:
+            d.pop('_matching_count', None)
+            
+        return processed
+
+    primary_list = process_and_sort(primary_results, is_suggestion=False)
+    suggestion_list = process_and_sort(suggestions_results, is_suggestion=True)
+
+    return jsonify(primary_list + suggestion_list)
 
 
 @recipes_bp.route('/<int:recipe_id>', methods=['GET'])

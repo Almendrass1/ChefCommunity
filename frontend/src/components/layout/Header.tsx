@@ -41,6 +41,12 @@ const Header: React.FC<HeaderProps> = ({
                                     Mi Perfil
                                     <span className={`absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 ${currentView === 'profile' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
                                 </a>
+                                {user.rol === 'admin' && (
+                                    <a onClick={() => onViewChange('administracion')} className={`text-xs font-black flex items-center gap-1 uppercase tracking-[0.2em] cursor-pointer hover:text-amber-500 transition-all duration-200 relative group ${currentView === 'administracion' ? 'text-amber-500' : 'text-white/70'}`}>
+                                        Administración
+                                        <span className={`absolute -bottom-1 left-0 h-0.5 bg-amber-500 transition-all duration-300 ${currentView === 'administracion' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+                                    </a>
+                                )}
                             </>
                         )}
                     </nav>
@@ -48,20 +54,31 @@ const Header: React.FC<HeaderProps> = ({
 
                 <div className="flex flex-1 justify-end gap-6 items-center">
                     {user ? (
-                        <div className="flex items-center gap-5">
+                        <div className="flex items-center gap-3 sm:gap-5">
+                            {user.rol === 'admin' && (
+                                <button
+                                    onClick={() => onViewChange('administracion')}
+                                    title="Panel de Administración"
+                                    className="flex lg:hidden items-center justify-center rounded border-2 border-amber-600 bg-amber-500/10 text-amber-500 hover:bg-amber-600 hover:text-white h-8 w-8 sm:h-9 sm:w-9 transition-all duration-200 shadow-retro-sm active:translate-y-0.5"
+                                >
+                                    <span translate="no" className="material-symbols-outlined text-base">shield</span>
+                                </button>
+                            )}
                             <button
                                 onClick={() => onViewChange('create-recipe')}
-                                className="hidden md:flex items-center justify-center rounded border-2 border-green-700 bg-white-900/30 text-green-400 hover:bg-green-700 hover:text-white h-9 px-4 text-xs font-bold uppercase transition-all duration-200 shadow-retro-sm active:translate-y-0.5"
+                                className="flex items-center justify-center rounded border-2 border-green-700 bg-green-900/30 text-green-400 hover:bg-green-700 hover:text-white h-8 w-8 sm:w-auto sm:px-4 sm:h-9 text-xs font-bold uppercase transition-all duration-200 shadow-retro-sm active:translate-y-0.5"
+                                title="Añadir Receta"
                             >
-                                + Receta
+                                <span translate="no" className="material-symbols-outlined text-base sm:hidden">add</span>
+                                <span className="hidden sm:inline">Receta</span>
                             </button>
                             <div
                                 className="flex items-center gap-3 cursor-pointer group"
                                 onClick={() => onGoToProfile(user)}
                             >
                                 <div className="relative">
-                                    <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=random`} className="w-9 h-9 rounded border-2 border-white/20 group-hover:border-primary transition-colors object-cover" alt="avatar" />
-                                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-retro-green border-2 border-[#1a1614] rounded-full"></div>
+                                    <img src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.username}&background=random`} className="w-8 h-8 sm:w-9 sm:h-9 rounded border-2 border-white/20 group-hover:border-primary transition-colors object-cover" alt="avatar" />
+                                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-retro-green border-2 border-background-dark rounded-full"></div>
                                 </div>
                                 <span className="font-bold text-white text-sm hidden sm:inline group-hover:text-primary transition-colors">{user.username}</span>
                             </div>

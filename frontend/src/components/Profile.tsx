@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import ConfirmationModal from './ConfirmationModal';
 import RecipeCard from './RecipeCard';
+import { generateShoppingListPDF } from '../utils/exportUtils';
 
 interface ProfileProps {
     profileUser: any;
@@ -116,6 +117,21 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
     useEffect(() => {
         setActiveTab(initialTab);
     }, [initialTab]);
+
+    useEffect(() => {
+        if (activeTab) {
+            const reverseTabMap: Record<string, string> = {
+                'collections': 'colecciones',
+                'recipes': 'recetas',
+                'meal plan': 'plan-semanal',
+                'favorites': 'favoritos'
+            };
+            const newPath = `/profile/${reverseTabMap[activeTab] || 'recetas'}`;
+            if (window.location.pathname !== newPath && window.location.pathname.startsWith('/profile')) {
+                window.history.replaceState(null, '', newPath + window.location.search);
+            }
+        }
+    }, [activeTab]);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -424,7 +440,6 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
             setUpdateLoading(false);
         }
     };
-
 
     if (loading) return <div className="text-center font-mono py-20">CARGANDO PERFIL...</div>;
     if (error || !profileData) return (
@@ -1090,13 +1105,20 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                             )}
                         </div>
 
-                        <div className="mt-8 text-center print:hidden">
+                        <div className="mt-8 text-center print:hidden flex justify-center gap-4">
                             <button
                                 onClick={() => window.print()}
                                 className="text-black font-bold uppercase text-xs border-2 border-black px-4 py-2 rounded hover:bg-black hover:text-white transition-colors gap-2 inline-flex items-center"
                             >
                                 <span translate="no" className="material-symbols-outlined notranslate text-base">print</span>
                                 Imprimir Lista
+                            </button>
+                            <button
+                                onClick={() => generateShoppingListPDF(shoppingList)}
+                                className="bg-primary hover:bg-[#d95d00] text-white font-bold uppercase text-xs border-2 border-black px-4 py-2 rounded shadow-retro-sm transition-all active:translate-y-0.5 gap-2 inline-flex items-center"
+                            >
+                                <span translate="no" className="material-symbols-outlined notranslate text-base">download</span>
+                                Descargar PDF
                             </button>
                         </div>
                     </div>

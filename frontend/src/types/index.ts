@@ -39,6 +39,9 @@ export interface Recipe {
     is_liked?: boolean;
     created_at: string;
     ingredients?: RecipeIngredient[];
+    is_suggestion?: boolean;
+    missing_ingredients?: string[];
+    is_complete?: boolean;
 }
 
 export interface MealPlan {

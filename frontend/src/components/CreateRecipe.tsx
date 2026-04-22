@@ -219,7 +219,7 @@ const CreateRecipe: React.FC<CreateRecipeProps> = ({ onCancel, onSuccess, token,
                                 onChange={e => setCategory(e.target.value)}
                                 className="w-full bg-[#f0f0f0] text-black border-2 border-black p-3 font-mono focus:outline-none focus:border-primary focus:shadow-retro-sm transition-all appearance-none cursor-pointer"
                             >
-                                {['Desayuno', 'Comida', 'Cena', 'Snack', 'Postre'].map(c => (
+                                {['Desayuno', 'Comida', 'Cena', 'Snack', 'Postre', 'Saludable'].map(c => (
                                     <option key={c} value={c}>{c}</option>
                                 ))}
                             </select>

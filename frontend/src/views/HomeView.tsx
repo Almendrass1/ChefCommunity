@@ -8,7 +8,6 @@ interface HomeViewProps {
     searchQuery: string;
     category: string;
     fridgeOnly: boolean;
-    ingredientTags: string[];
 }
 
 const HomeView: React.FC<HomeViewProps> = ({
@@ -17,7 +16,6 @@ const HomeView: React.FC<HomeViewProps> = ({
     searchQuery,
     category,
     fridgeOnly,
-    ingredientTags,
 }) => {
     return (
         <div className="flex flex-col grow min-h-0">
@@ -34,16 +32,32 @@ const HomeView: React.FC<HomeViewProps> = ({
                 </div>
 
                 <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
-                    {recipes.length > 0 ? recipes.map((recipe) => (
+                    {recipes.filter(r => !r.is_suggestion).length > 0 ? recipes.filter(r => !r.is_suggestion).map((recipe) => (
                         <div key={recipe.id} onClick={() => onRecipeClick(recipe)} className="cursor-pointer">
-                            <RecipeCard recipe={recipe} showWarnings={fridgeOnly || ingredientTags.length > 0} />
+                            <RecipeCard recipe={recipe} showWarnings={fridgeOnly} />
                         </div>
                     )) : (
                         <div className="col-span-full py-20 text-center text-secondary dark:text-[#b9a89d] font-mono border-2 border-dashed border-secondary">
-                            NO SE ENCONTRARON RECETAS. SÉ EL PRIMERO EN SUBIR UNA.
+                            NO SE ENCONTRARON RECETAS EXACTAS. SÉ EL PRIMERO EN SUBIR UNA.
                         </div>
                     )}
                 </div>
+
+                {recipes.filter(r => r.is_suggestion).length > 0 && (
+                    <div className="mt-12">
+                        <div className="flex items-center gap-2 mb-6">
+                            <span translate="no" className="material-symbols-outlined text-amber-500">auto_awesome</span>
+                            <h3 className="text-xl font-bold uppercase tracking-widest text-amber-500">SUGERENCIAS: Quizás te interese esto con tus ingredientes</h3>
+                        </div>
+                        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+                            {recipes.filter(r => r.is_suggestion).map((recipe) => (
+                                <div key={`sug-${recipe.id}`} onClick={() => onRecipeClick(recipe)} className="cursor-pointer">
+                                    <RecipeCard recipe={recipe} showWarnings={true} />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </main >
         </div >
     );

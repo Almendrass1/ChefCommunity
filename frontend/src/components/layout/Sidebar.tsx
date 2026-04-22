@@ -100,11 +100,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                             <span translate="no" className="material-symbols-outlined notranslate text-lg">{isPopular ? 'star_rate' : 'grade'}</span>
                         </button>
                         <button
-                            onClick={() => setCategory(category === 'Vegetariano' ? '' : 'Vegetariano')}
+                            onClick={() => setCategory(category === 'Saludable' ? '' : 'Saludable')}
                             className={`w-full text-left px-4 py-2.5 rounded border-2 text-[11px] font-bold transition-all uppercase tracking-wider flex items-center justify-between
-                            ${category === 'Vegetariano' ? 'bg-green-100/10 border-retro-green text-retro-green shadow-retro-sm translate-y-0.5' : 'bg-white/5 border-white/10 text-white/70 hover:border-retro-green/50'}`}
+                            ${category === 'Saludable' ? 'bg-green-100/10 border-retro-green text-retro-green shadow-retro-sm translate-y-0.5' : 'bg-white/5 border-white/10 text-white/70 hover:border-retro-green/50'}`}
                         >
-                            <span>Vegetariano</span>
+                            <span>Saludable</span>
                             <span translate="no" className="material-symbols-outlined notranslate text-lg">eco</span>
                         </button>
                         <button
@@ -133,6 +133,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             <option value="Plato Principal" className="bg-background-dark">Plato Principal</option>
                             <option value="Desayunos" className="bg-background-dark">Desayunos</option>
                             <option value="Aperitivos" className="bg-background-dark">Aperitivos</option>
+                            <option value="Saludable" className="bg-background-dark">Saludable</option>
                         </select>
                     </div>
 

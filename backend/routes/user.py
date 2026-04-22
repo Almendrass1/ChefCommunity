@@ -37,6 +37,45 @@ def get_profile(user_id):
         return jsonify({'error': str(e), 'trace': traceback.format_exc()}), 500
 
 
+@user_bp.route('/all', methods=['GET'])
+@jwt_required()
+def get_all_users():
+    """Obtiene todos los usuarios (Solo Admin)"""
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+    
+    if not current_user or current_user.rol != 'admin':
+        return jsonify({'error': 'No autorizado'}), 403
+        
+    users = User.query.all()
+    users_data = []
+    for user in users:
+        u_dict = user.to_dict()
+        u_dict['recipes_count'] = len(user.recipes)
+        users_data.append(u_dict)
+        
+    return jsonify(users_data)
+
+
+@user_bp.route('/<int:target_user_id>', methods=['DELETE'])
+@jwt_required()
+def delete_user(target_user_id):
+    """Elimina un usuario y todo su contenido (Solo Admin)"""
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+    
+    if not current_user or current_user.rol != 'admin':
+        return jsonify({'error': 'No autorizado'}), 403
+        
+    if str(current_user_id) == str(target_user_id):
+        return jsonify({'error': 'No puedes eliminarte a ti mismo'}), 400
+        
+    user_to_delete = User.query.get_or_404(target_user_id)
+    db.session.delete(user_to_delete)
+    db.session.commit()
+    return jsonify({'message': 'Usuario eliminado exitosamente'})
+
+
 @user_bp.route('/me/likes', methods=['GET'])
 @jwt_required()
 def get_liked_recipes():

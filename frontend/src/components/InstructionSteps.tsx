@@ -23,7 +23,7 @@ const InstructionSteps: React.FC<InstructionStepsProps> = ({ steps, formattedIns
                             {/* Content */}
                             <div className="grow space-y-4">
                                 <div className="flex items-center gap-4">
-                                    <span className="flex-none w-10 h-10 bg-black text-white font-mono font-bold flex items-center justify-center rounded-lg shadow-retro-sm">
+                                    <span className="flex-none w-8 h-8 bg-black text-white font-mono font-bold  flex items-center justify-center  shadow-retro-sm">
                                         {(idx + 1).toString().padStart(2, '0')}
                                     </span>
                                     <div className="h-0.5 bg-black/10 grow"></div>

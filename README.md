@@ -30,13 +30,3 @@ Estas son las características que se implementarán en la primera fase del proy
 **Autor:** Mariana Almendras F.  
 **Curso:** 2º Desarrollo de Aplicaciones Web (DAW)
 
-## COSAS QUE FALTAN: 
-    - **Buscador con Filtros:** Búsqueda por nombre de plato y categorías básicas (postres, ensaladas, etc.).
-
-    Funcionalidades a 'escala mayor'
-    - **Buscador "Lo que tengo en la nevera":** Filtro inteligente basado en ingredientes disponibles.
-    - **Interacción Social:** Sistema de valoraciones (estrellas) y comentarios en recetas de terceros.
-    - **Exportación de Datos:** Generación de lista de compra en formato PDF o envío por WhatsApp.
-    - **Diseño Responsive Avanzado:** Optimización total para dispositivos móviles (uso en supermercado).
-
-16 --> Buscardor 

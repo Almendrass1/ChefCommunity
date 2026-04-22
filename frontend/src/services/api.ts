@@ -70,4 +70,8 @@ export const api = {
         getFavorites: () => request<any[]>('/users/me/likes'),
         generateShoppingList: () => request<any[]>('/users/me/shopping-list/generate'),
     },
+    admin: {
+        getUsers: () => request<any[]>('/users/all'),
+        deleteUser: (id: number) => request<any>(`/users/${id}`, { method: 'DELETE' }),
+    },
 };
