@@ -1,5 +1,6 @@
 // Usar variable de entorno si existe (útil para S3), de lo contrario usa /api (útil para Docker y desarrollo local)
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+// Forzamos el uso de la ruta relativa para que el navegador herede el protocolo HTTPS automáticamente
+const API_BASE = '/api';
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const token = localStorage.getItem('token');
