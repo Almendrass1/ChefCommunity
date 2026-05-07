@@ -69,7 +69,7 @@ def get_recipes():
 
     primary_query = base_query
     
-    if category:
+    if category and category.lower() != 'todas':
         # Quitamos la 's' final para que "Postres" busque "Postre" y "Ensaladas" busque "Ensalada"
         search_cat = category.lower().rstrip('s')
         primary_query = primary_query.filter(func.lower(Recipe.category).like(f'%{search_cat}%'))
