@@ -35,8 +35,5 @@ class Config:
     JWT_TOKEN_LOCATION = ['headers']
     JWT_COOKIE_CSRF_PROTECT = False # Disable CSRF protection for headers
     
-    # CORS - Permitir frontend en desarrollo
-    CORS_ORIGINS = [
-        'http://localhost:5173',
-        'http://127.0.0.1:5173'
-    ]
+    # CORS - Permitir frontend en desarrollo y producción
+    CORS_ORIGINS = "*"

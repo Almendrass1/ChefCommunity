@@ -82,6 +82,14 @@ def create_app():
             }
         }
     
+    # Crear tablas si no existen
+    with app.app_context():
+        try:
+            db.create_all()
+            print('✅ Conexión a base de datos y creación de tablas exitosa')
+        except Exception as e:
+            print(f'⚠️  Error de conexión a la base de datos: {e}')
+    
     return app
 
 
