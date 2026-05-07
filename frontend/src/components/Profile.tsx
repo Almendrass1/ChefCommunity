@@ -784,8 +784,13 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                                 />
                             ))
                         ) : (
-                            <div className="col-span-full text-center py-12 font-mono text-[#5D4037] dark:text-[#b9a89d] border-2 border-dashed border-[#5D4037] rounded-xl">
-                                NADIE A QUIEN SIGUES HA SUBIDO RECETAS AÚN.
+                            <div className="col-span-full text-center py-12 font-mono text-[#5D4037] dark:text-[#b9a89d] border-2 border-dashed border-[#5D4037] rounded-xl flex flex-col items-center gap-4">
+                                <span translate="no" className="material-symbols-outlined text-4xl opacity-50">group_off</span>
+                                {layoutData?.user?.following_count === 0 ? (
+                                    <span>AÚN NO SIGUES A NADIE</span>
+                                ) : (
+                                    <span>TUS AMIGOS AÚN NO HAN COMPARTIDO RECETAS</span>
+                                )}
                             </div>
                         )}
                     </div>
