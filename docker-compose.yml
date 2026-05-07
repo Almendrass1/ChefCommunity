@@ -1,29 +1,51 @@
 version: '3.8'
 
 services:
+  db:
+    image: mysql:8.0
+    container_name: chefco2_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DB:-chef_community}
+      MYSQL_USER: ${MYSQL_USER:-chef_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-chef_password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: chefco2_backend
+    restart: unless-stopped
     ports:
       - "5000:5000"
     environment:
       - FLASK_ENV=production
-      # En producción es mejor conectar la base de datos a un archivo local
-      # persistente, o usar Amazon RDS. Por defecto cargará la de desarrollo.
+      - MYSQL_HOST=db
+      - MYSQL_USER=${MYSQL_USER:-chef_user}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-chef_password}
+      - MYSQL_DB=${MYSQL_DB:-chef_community}
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+    depends_on:
+      - db
     volumes:
-      # Esto mapea la base de datos SQLite para que no se borre si el contenedor se reinicia
-      - ./backend/instance:/app/instance
-    restart: unless-stopped
+      - ./backend/static/uploads:/app/static/uploads
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: chefco2_frontend
+    restart: unless-stopped
     ports:
       - "80:80"
     depends_on:
       - backend
-    restart: unless-stopped
+
+volumes:
+  mysql_data:
