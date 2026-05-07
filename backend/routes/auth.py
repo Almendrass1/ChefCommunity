@@ -27,12 +27,16 @@ def register():
     # Hash password
     hashed = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
     
+    # Si es el primer usuario de la base de datos, hacerlo admin automáticamente
+    is_first_user = User.query.count() == 0
+    assigned_rol = 'admin' if is_first_user else 'aprendiz'
+
     # Crear usuario
     new_user = User(
         username=data['username'],
         email=data['email'],
         password=hashed.decode('utf-8'),
-        rol=data.get('rol', 'aprendiz'),
+        rol=assigned_rol,
         bio=data.get('bio', ''),
         avatar_url=data.get('avatar_url', '')
     )
