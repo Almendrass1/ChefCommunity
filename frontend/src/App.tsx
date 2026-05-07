@@ -115,6 +115,7 @@ function App() {
     const fetchRecipes = async () => {
       setLoading(true);
       try {
+        // Si hay cualquier categoría seleccionada (incluida "Todas"), no filtramos solo por "siguiendo"
         let sort = user && !searchQuery && !category && !difficulty && !fridgeOnly ? 'following' : undefined;
         if (isPopular) sort = 'rating';
 
