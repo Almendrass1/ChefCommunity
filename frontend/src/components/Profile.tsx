@@ -55,6 +55,8 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
     const [favorites, setFavorites] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [followingRecipes, setFollowingRecipes] = useState<any[]>([]);
+    const [followingLoading, setFollowingLoading] = useState(false);
 
     // Collection & Selection State
     const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
@@ -111,7 +113,8 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
         'recipes': 'Recetas',
         'collections': 'Colecciones',
         'meal plan': 'Plan Semanal',
-        'favorites': 'Favoritos'
+        'favorites': 'Favoritos',
+        'following': 'Siguiendo'
     };
 
     useEffect(() => {
@@ -124,7 +127,8 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                 'collections': 'colecciones',
                 'recipes': 'recetas',
                 'meal plan': 'plan-semanal',
-                'favorites': 'favoritos'
+                'favorites': 'favoritos',
+                'following': 'siguiendo'
             };
             const newPath = `/profile/${reverseTabMap[activeTab] || 'recetas'}`;
             if (window.location.pathname !== newPath && window.location.pathname.startsWith('/profile')) {
@@ -132,6 +136,30 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
             }
         }
     }, [activeTab]);
+
+    useEffect(() => {
+        const fetchFollowingRecipes = async () => {
+            if (!token || activeTab !== 'following') return;
+            setFollowingLoading(true);
+            try {
+                const res = await fetch('/api/recipes/?sort=following', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setFollowingRecipes(data);
+                }
+            } catch (e) {
+                console.error("Error fetching following recipes", e);
+            } finally {
+                setFollowingLoading(false);
+            }
+        };
+
+        if (activeTab === 'following' && isOwner) {
+            fetchFollowingRecipes();
+        }
+    }, [activeTab, token, isOwner]);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -454,6 +482,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
     if (isOwner) {
         tabs.push('meal plan');
         tabs.push('favorites');
+        tabs.push('following');
     }
 
     return (
@@ -736,6 +765,29 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                                 Generar Lista de Compra
                             </button>
                         </div>
+                    </div>
+                )}
+
+                {activeTab === 'following' && (
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+                        {followingLoading ? (
+                            <div className="col-span-full text-center py-20 font-mono text-[#5D4037]">CARGANDO MURO...</div>
+                        ) : followingRecipes.length > 0 ? (
+                            followingRecipes.map((recipe: any) => (
+                                <RecipeCard
+                                    key={recipe.id}
+                                    recipe={{
+                                        ...recipe,
+                                        main_image_url: recipe.main_image_url || recipe.image_url
+                                    }}
+                                    onClick={() => onRecipeClick && onRecipeClick(recipe)}
+                                />
+                            ))
+                        ) : (
+                            <div className="col-span-full text-center py-12 font-mono text-[#5D4037] dark:text-[#b9a89d] border-2 border-dashed border-[#5D4037] rounded-xl">
+                                NADIE A QUIEN SIGUES HA SUBIDO RECETAS AÚN.
+                            </div>
+                        )}
                     </div>
                 )}
 
