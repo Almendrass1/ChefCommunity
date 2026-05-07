@@ -44,7 +44,7 @@ def get_recipes():
     # Filtros básicos (strict)
     if author_id:
         base_query = base_query.filter(Recipe.author_id == int(author_id))
-    if difficulty:
+    if difficulty and difficulty.lower() != 'todas':
         base_query = base_query.filter(Recipe.difficulty == difficulty)
     if max_time:
         base_query = base_query.filter(Recipe.prep_time <= int(max_time))
