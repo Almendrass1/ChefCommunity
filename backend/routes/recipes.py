@@ -104,18 +104,14 @@ def get_recipes():
             if current_user_id:
                 # Asegurar que el ID sea un entero
                 uid = int(current_user_id)
-                # Obtener IDs de seguidos + el propio usuario
+                # Obtener IDs de seguidos ÚNICAMENTE
                 followed_ids = [f.followed_id for f in Follow.query.filter_by(follower_id=uid).all()]
-                followed_ids.append(uid) # Incluir mis propias recetas
                 
-                # Intentar filtrar por estos autores
-                following_query = primary_query.filter(Recipe.author_id.in_(followed_ids))
-                
-                # Si no hay ninguna receta de seguidos ni propia, mostrar las más recientes globales (fallback)
-                if following_query.count() == 0:
-                    primary_query = primary_query.order_by(Recipe.created_at.desc())
+                if not followed_ids:
+                    # Si no sigue a nadie, devolvemos consulta vacía
+                    primary_query = primary_query.filter(Recipe.id == -1)
                 else:
-                    primary_query = following_query.order_by(Recipe.created_at.desc())
+                    primary_query = primary_query.filter(Recipe.author_id.in_(followed_ids)).order_by(Recipe.created_at.desc())
             else:
                 primary_query = primary_query.order_by(Recipe.created_at.desc())
         except:
