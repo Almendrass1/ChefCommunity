@@ -500,15 +500,16 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                             {profileData.user.username}
                             {isOwner && <span className="text-[10px] md:text-sm bg-black text-white px-2 py-0.5 md:py-1 rounded align-middle">TÚ</span>}
                         </h3>
-                        <p className="font-mono text-xs md:text-base text-[#5D4037] dark:text-[#b9a89d] max-w-lg mb-2 md:mb-4">
-                            {profileData.user.bio || "Aún no hay biografía. Solo buenas vibras."}
-                        </p>
-                        
-                        {/* Role Presentation */}
-                        <p className="font-serif italic text-xs md:text-sm text-gray-600 dark:text-gray-400 mb-4 md:mb-6 flex items-center justify-start gap-1 md:gap-2">
-                            <span translate="no" className="material-symbols-outlined notranslate text-sm md:text-lg">format_quote</span>
-                            {roleInfo.description}
-                        </p>
+                        {profileData.user.bio ? (
+                            <p className="font-mono text-xs md:text-base text-[#5D4037] dark:text-[#b9a89d] max-w-lg mb-4 md:mb-6 italic">
+                                "{profileData.user.bio}"
+                            </p>
+                        ) : (
+                            <p className="font-serif italic text-xs md:text-sm text-gray-600 dark:text-gray-400 mb-4 md:mb-6 flex items-center justify-start gap-1 md:gap-2">
+                                <span translate="no" className="material-symbols-outlined notranslate text-sm md:text-lg">format_quote</span>
+                                {roleInfo.description}
+                            </p>
+                        )}
                         
                         {/* Stats for Desktop only (hidden on mobile since they are at the top) */}
                         <div className="hidden md:flex gap-6 justify-start mb-6">
