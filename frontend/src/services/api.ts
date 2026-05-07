@@ -30,9 +30,9 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 
 export const api = {
     auth: {
-        login: (credentials: any) => request<any>('/auth/login', { method: 'POST', body: JSON.stringify(credentials) }),
-        register: (data: any) => request<any>('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
-        getMe: () => request<any>('/auth/me'),
+        login: (credentials: any) => request<any>('/auth/login/', { method: 'POST', body: JSON.stringify(credentials) }),
+        register: (data: any) => request<any>('/auth/register/', { method: 'POST', body: JSON.stringify(data) }),
+        getMe: () => request<any>('/auth/me/'),
     },
     recipes: {
         getAll: (params: { sort?: string; search?: string; category?: string; difficulty?: string; fridge?: boolean; ingredients?: string; max_time?: number } = {}) => {
@@ -45,13 +45,13 @@ export const api = {
             if (params.ingredients) query.append('ingredients', params.ingredients);
             if (params.max_time) query.append('max_time', params.max_time.toString());
             const queryString = query.toString();
-            return request<any[]>(`/recipes${queryString ? `?${queryString}` : ''}`);
+            return request<any[]>(`/recipes/${queryString ? `?${queryString}` : ''}`);
         },
-        getOne: (id: number) => request<any>(`/recipes/${id}`),
-        create: (formData: FormData) => request<any>('/recipes', { method: 'POST', body: formData }),
-        update: (id: number, formData: FormData) => request<any>(`/recipes/${id}`, { method: 'PUT', body: formData }),
-        delete: (id: number) => request<any>(`/recipes/${id}`, { method: 'DELETE' }),
-        toggleLike: (id: number) => request<any>(`/recipes/${id}/like`, { method: 'POST' }),
+        getOne: (id: number) => request<any>(`/recipes/${id}/`),
+        create: (formData: FormData) => request<any>('/recipes/', { method: 'POST', body: formData }),
+        update: (id: number, formData: FormData) => request<any>(`/recipes/${id}/`, { method: 'PUT', body: formData }),
+        delete: (id: number) => request<any>(`/recipes/${id}/`, { method: 'DELETE' }),
+        toggleLike: (id: number) => request<any>(`/recipes/${id}/like/`, { method: 'POST' }),
         addReview: (id: number, data: FormData | { rating: number; comment: string }) => {
             const options: RequestInit = { method: 'POST' };
             if (data instanceof FormData) {
@@ -59,21 +59,21 @@ export const api = {
             } else {
                 options.body = JSON.stringify(data);
             }
-            return request<any>(`/recipes/${id}/reviews`, options);
+            return request<any>(`/recipes/${id}/reviews/`, options);
         },
     },
     users: {
-        getProfile: (id: number) => request<any>(`/users/${id}`),
-        updateProfile: (formData: FormData) => request<any>('/users/me', { method: 'PUT', body: formData }),
-        follow: (id: number) => request<any>(`/users/${id}/follow`, { method: 'POST' }),
-        getMealPlan: () => request<any[]>('/users/me/meal-plan'),
-        addToMealPlan: (data: any) => request<any>('/users/me/meal-plan', { method: 'POST', body: JSON.stringify(data) }),
-        deleteMealPlanItem: (id: number) => request<any>(`/users/me/meal-plan/${id}`, { method: 'DELETE' }),
-        getFavorites: () => request<any[]>('/users/me/likes'),
-        generateShoppingList: () => request<any[]>('/users/me/shopping-list/generate'),
+        getProfile: (id: number) => request<any>(`/users/${id}/`),
+        updateProfile: (formData: FormData) => request<any>('/users/me/', { method: 'PUT', body: formData }),
+        follow: (id: number) => request<any>(`/users/${id}/follow/`, { method: 'POST' }),
+        getMealPlan: () => request<any[]>('/users/me/meal-plan/'),
+        addToMealPlan: (data: any) => request<any>('/users/me/meal-plan/', { method: 'POST', body: JSON.stringify(data) }),
+        deleteMealPlanItem: (id: number) => request<any>(`/users/me/meal-plan/${id}/`, { method: 'DELETE' }),
+        getFavorites: () => request<any[]>('/users/me/likes/'),
+        generateShoppingList: () => request<any[]>('/users/me/shopping-list/generate/'),
     },
     admin: {
-        getUsers: () => request<any[]>('/users/all'),
-        deleteUser: (id: number) => request<any>(`/users/${id}`, { method: 'DELETE' }),
+        getUsers: () => request<any[]>('/users/all/'),
+        deleteUser: (id: number) => request<any>(`/users/${id}/`, { method: 'DELETE' }),
     },
 };
