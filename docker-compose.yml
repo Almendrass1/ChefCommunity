@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: chefco2_backend
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      # En producción es mejor conectar la base de datos a un archivo local
+      # persistente, o usar Amazon RDS. Por defecto cargará la de desarrollo.
+    volumes:
+      # Esto mapea la base de datos SQLite para que no se borre si el contenedor se reinicia
+      - ./backend/instance:/app/instance
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: chefco2_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

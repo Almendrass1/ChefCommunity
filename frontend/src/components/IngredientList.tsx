@@ -25,7 +25,7 @@ const IngredientList: React.FC<IngredientListProps> = ({ ingredients, loading })
                     Ingredientes {loading && <span className="animate-pulse opacity-50 text-sm ml-2 font-normal">(Cargando...)</span>}
                 </h3>
 
-                <ul className="space-y-0 pl-2 relative z-10">
+                <ul className="space-y-0 pl-2 relative z-10 pb-12">
                     {ingredients.length > 0 ? ingredients.map((item, i) => {
                         const name = typeof item === 'string' ? item : item.name;
                         const detail = typeof item === 'object' && (item.quantity || item.unit) 
@@ -34,7 +34,7 @@ const IngredientList: React.FC<IngredientListProps> = ({ ingredients, loading })
                         const id = `ingredient-${i}`;
                         
                         return (
-                            <li key={id} className="flex items-start gap-3 group cursor-pointer h-8 pt-1">
+                            <li key={id} className="flex items-start gap-3 group cursor-pointer min-h-[32px] py-1">
                                 <input 
                                     id={id}
                                     className="retro-checkbox w-5 h-5 border-2 border-black rounded-none focus:ring-0 text-primary mt-0.5" 

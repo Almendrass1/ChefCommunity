@@ -128,11 +128,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                             onChange={(e) => setCategory(e.target.value)}
                         >
                             <option value="" className="bg-background-dark">Todas</option>
-                            <option value="Postres" className="bg-background-dark">Postres</option>
-                            <option value="Ensaladas" className="bg-background-dark">Ensaladas</option>
-                            <option value="Plato Principal" className="bg-background-dark">Plato Principal</option>
                             <option value="Desayunos" className="bg-background-dark">Desayunos</option>
+                            <option value="Plato Principal" className="bg-background-dark">Plato Principal</option>
+                            <option value="Cenas" className="bg-background-dark">Cenas</option>
+                            <option value="Ensaladas" className="bg-background-dark">Ensaladas</option>
                             <option value="Aperitivos" className="bg-background-dark">Aperitivos</option>
+                            <option value="Snacks" className="bg-background-dark">Snacks</option>
+                            <option value="Postres" className="bg-background-dark">Postres</option>
                             <option value="Saludable" className="bg-background-dark">Saludable</option>
                         </select>
                     </div>

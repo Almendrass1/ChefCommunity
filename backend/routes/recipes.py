@@ -70,9 +70,11 @@ def get_recipes():
     primary_query = base_query
     
     if category:
-        primary_query = primary_query.filter(Recipe.category == category)
+        # Quitamos la 's' final para que "Postres" busque "Postre" y "Ensaladas" busque "Ensalada"
+        search_cat = category.lower().rstrip('s')
+        primary_query = primary_query.filter(func.lower(Recipe.category).like(f'%{search_cat}%'))
     if search:
-        primary_query = primary_query.filter(Recipe.title.ilike(f'%{search}%'))
+        primary_query = primary_query.filter(func.lower(Recipe.title).like(f'%{search.lower()}%'))
 
     # Filtro inclusivo para primary
     if fridge or ingredients:

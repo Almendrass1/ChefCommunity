@@ -28,6 +28,9 @@ class User(db.Model):
     following = db.relationship('Follow', foreign_keys='Follow.follower_id', backref='follower', lazy=True, cascade='all, delete-orphan')
     followers = db.relationship('Follow', foreign_keys='Follow.followed_id', backref='followed', lazy=True, cascade='all, delete-orphan')
     
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def to_dict(self):
         return {
             'id': self.id,
@@ -50,6 +53,9 @@ class Ingredient(db.Model):
     name = db.Column(db.String(100), unique=True, nullable=False)
     unit = db.Column(db.String(20))
     
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def to_dict(self):
         return {
             'id': self.id,
@@ -81,6 +87,9 @@ class Recipe(db.Model):
     reviews = db.relationship('Review', backref='recipe', lazy=True, cascade='all, delete-orphan')
     likes = db.relationship('Like', backref='recipe', lazy=True, cascade='all, delete-orphan')
     
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def to_dict(self, include_author=True, include_ingredients=True):
         # Calcular calificación promedio
         ratings = [r.rating for r in self.reviews if r.rating]
@@ -127,6 +136,9 @@ class RecipeStep(db.Model):
     text = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(255))
     
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def to_dict(self):
         return {
             'id': self.id,
@@ -147,6 +159,9 @@ class RecipeIngredient(db.Model):
     # Relación con ingrediente
     ingredient = db.relationship('Ingredient', lazy=True)
     
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def to_dict(self):
         # Conversion logic for display
         unit = self.ingredient.unit if self.ingredient else 'ud'
@@ -191,6 +206,9 @@ class UserStock(db.Model):
     # Relación con ingrediente
     ingredient = db.relationship('Ingredient', lazy=True)
     
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def to_dict(self):
         return {
             'ingredient_id': self.ingredient_id,
@@ -213,6 +231,9 @@ class MealPlan(db.Model):
     # Relaciones
     recipe = db.relationship('Recipe', lazy=True)
     
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def to_dict(self):
         return {
             'id': self.id,
@@ -232,6 +253,9 @@ class Follow(db.Model):
     followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
 
 class Review(db.Model):
     """Modelo de valoraciones y comentarios"""
@@ -248,6 +272,9 @@ class Review(db.Model):
     # Relación con usuario
     user = db.relationship('User', lazy=True)
     
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def to_dict(self):
         return {
             'id': self.id,
@@ -270,6 +297,9 @@ class Like(db.Model):
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'), primary_key=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
 
 class RecipeCollection(db.Model):
     """Modelo para colecciones de recetas (Libros)"""
@@ -284,6 +314,9 @@ class RecipeCollection(db.Model):
     # Relación M:N con recetas a través de una tabla intermedia
     recipes = db.relationship('Recipe', secondary='collection_recipes', lazy='subquery',
         backref=db.backref('collections', lazy=True))
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def to_dict(self):
         return {
@@ -305,6 +338,9 @@ collection_recipes = db.Table('collection_recipes',
 class ShoppingList(db.Model):
     """Modelo para lista de compra manual (adicional a la automática)"""
     __tablename__ = 'shopping_list'
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)

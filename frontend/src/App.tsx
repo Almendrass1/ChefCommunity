@@ -153,7 +153,7 @@ function App() {
   const handleLogin = (data: { user: User; token: string }) => {
     login(data.user, data.token);
     setViewedProfile(data.user);
-    setCurrentView('profile');
+    setCurrentView('home');
   };
 
   const goToProfile = (targetUser: User, tab: string = 'recipes') => {
