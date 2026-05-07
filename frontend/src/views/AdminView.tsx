@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
-import { Recipe } from '../types';
+import { Recipe, User } from '../types';
 
 interface AdminViewProps {
     onEditRecipe: (recipe: Recipe) => void;
+    onUserClick: (user: User) => void;
 }
 
-const AdminView: React.FC<AdminViewProps> = ({ onEditRecipe }) => {
+const AdminView: React.FC<AdminViewProps> = ({ onEditRecipe, onUserClick }) => {
     const [activeTab, setActiveTab] = useState<'recipes' | 'users'>('recipes');
     const [users, setUsers] = useState<any[]>([]);
     const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -94,7 +95,14 @@ const AdminView: React.FC<AdminViewProps> = ({ onEditRecipe }) => {
                             {users.map(u => (
                                 <tr key={u.id} className="border-b border-gray-200 hover:bg-gray-50 text-black">
                                     <td className="p-4 font-bold">{u.id}</td>
-                                    <td className="p-4 text-sm font-display font-bold">@{u.username}</td>
+                                    <td className="p-4 text-sm font-display font-bold">
+                                        <button 
+                                            onClick={() => onUserClick(u)}
+                                            className="hover:text-primary transition-colors text-left"
+                                        >
+                                            @{u.username}
+                                        </button>
+                                    </td>
                                     <td className="p-4">
                                         <span className={`px-2 py-1 text-xs uppercase rounded border ${u.rol === 'admin' ? 'bg-indigo-100 text-indigo-800 border-indigo-800' : 'bg-green-100 text-green-800 border-green-800'}`}>
                                             {u.rol || 'aprendiz'}

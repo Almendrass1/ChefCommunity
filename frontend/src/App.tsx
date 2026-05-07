@@ -206,6 +206,7 @@ function App() {
                     setSelectedRecipe(recipe);
                     setCurrentView('update-recipe');
                 }}
+                onUserClick={(user) => goToProfile(user)}
             />;
         } else {
             // Un-authorized
