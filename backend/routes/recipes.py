@@ -102,9 +102,11 @@ def get_recipes():
             verify_jwt_in_request(optional=True)
             current_user_id = get_jwt_identity()
             if current_user_id:
+                # Asegurar que el ID sea un entero
+                uid = int(current_user_id)
                 # Obtener IDs de seguidos + el propio usuario
-                followed_ids = [f.followed_id for f in Follow.query.filter_by(follower_id=current_user_id).all()]
-                followed_ids.append(current_user_id) # Incluir mis propias recetas
+                followed_ids = [f.followed_id for f in Follow.query.filter_by(follower_id=uid).all()]
+                followed_ids.append(uid) # Incluir mis propias recetas
                 
                 # Intentar filtrar por estos autores
                 following_query = primary_query.filter(Recipe.author_id.in_(followed_ids))
