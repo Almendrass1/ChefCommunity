@@ -127,7 +127,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
                         >
-                            <option value="" className="bg-background-dark">Todas</option>
+                            <option value="Todas" className="bg-background-dark">Todas</option>
                             <option value="Desayunos" className="bg-background-dark">Desayunos</option>
                             <option value="Plato Principal" className="bg-background-dark">Plato Principal</option>
                             <option value="Cenas" className="bg-background-dark">Cenas</option>
@@ -146,7 +146,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             value={difficulty}
                             onChange={(e) => setDifficulty(e.target.value)}
                         >
-                            <option value="" className="bg-background-dark">Todas</option>
+                            <option value="Todas" className="bg-background-dark">Todas</option>
                             <option value="Fácil" className="bg-background-dark">Fácil</option>
                             <option value="Media" className="bg-background-dark">Media</option>
                             <option value="Difícil" className="bg-background-dark">Difícil</option>
