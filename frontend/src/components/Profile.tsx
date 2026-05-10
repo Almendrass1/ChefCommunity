@@ -1191,14 +1191,14 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
 
                         <button
                             onClick={() => setIsEditModalOpen(false)}
-                            className="absolute top-6 right-6 text-secondary dark:text-[#b9a89d] hover:text-primary transition-colors z-20"
+                            className="absolute top-6 right-6 text-secondary dark:text-primary hover:text-primary transition-colors z-20"
                         >
                             <span translate="no" className="material-symbols-outlined notranslate text-2xl font-bold">close</span>
                         </button>
 
                         <div className="text-center mb-8">
                             <h3 className="text-3xl font-bold text-primary mb-1 uppercase tracking-tighter">Editar Perfil</h3>
-                            <p className="font-mono text-secondary dark:text-[#b9a89d] text-[10px] tracking-[0.2em] uppercase">Mantenimiento de Cuenta</p>
+                            <p className="font-mono text-secondary dark:text-primary/70 text-[10px] tracking-[0.2em] uppercase">Mantenimiento de Cuenta</p>
                         </div>
 
                         <form onSubmit={handleEditSubmit} className="space-y-6 relative z-10">
@@ -1225,7 +1225,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
 
                                 <div className="flex-1 w-full space-y-4">
                                     <div>
-                                        <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-black dark:text-white">
+                                        <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-secondary dark:text-primary">
                                             Nombre de Usuario
                                         </label>
                                         <input
@@ -1238,7 +1238,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                                     </div>
 
                                     <div>
-                                        <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-black dark:text-white">
+                                        <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-secondary dark:text-primary">
                                             Especialidad (Rol)
                                         </label>
                                         <select
@@ -1255,7 +1255,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                             </div>
 
                             <div>
-                                <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-black dark:text-white">
+                                <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-secondary dark:text-primary">
                                     Biografía
                                 </label>
                                 <textarea
@@ -1267,7 +1267,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                             </div>
 
                             <div>
-                                <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-primary dark:text-orange-400">
+                                <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-primary dark:text-primary">
                                     Nueva Contraseña (opcional)
                                 </label>
                                 <input
