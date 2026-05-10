@@ -568,7 +568,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                                 });
                                 setIsEditModalOpen(true);
                             }}
-                            className="w-full md:w-auto bg-primary hover:bg-[#d95d00] text-white font-bold py-2 px-4 text-xs md:text-base rounded border-2 border-black uppercase shadow-retro-sm active:translate-y-0.5 active:shadow-none transition-all z-10"
+                            className="w-full md:w-auto bg-primary hover:bg-[#d95d00] text-black font-bold py-2 px-4 text-xs md:text-base rounded border-2 border-black uppercase shadow-retro-sm active:translate-y-0.5 active:shadow-none transition-all z-10"
                         >
                             Editar Perfil
                         </button>
@@ -577,7 +577,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                         <button
                             onClick={handleFollow}
                             className={`w-full md:w-auto font-bold py-2 px-4 text-xs md:text-base rounded border-2 border-black uppercase shadow-retro-sm active:translate-y-0.5 active:shadow-none transition-all z-10 flex items-center justify-center gap-2
-                        ${layoutData?.is_following ? 'bg-black text-white hover:bg-gray-800' : 'bg-primary hover:bg-[#d95d00] text-white'}`}
+                        ${layoutData?.is_following ? 'bg-black text-white hover:bg-gray-800' : 'bg-primary hover:bg-[#d95d00] text-black'}`}
                         >
                             {layoutData?.is_following ? (
                                 <>
@@ -1022,14 +1022,14 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                         <div className="mt-8 flex gap-4 relative z-10">
                             <button
                                 onClick={() => setIsAddFromFavoritesOpen(false)}
-                                className="btn-cancel flex-1 py-3 text-xs tracking-widest bg-amber-50 p-2"
+                                className="btn-cancel flex-1 py-3 text-xs tracking-widest bg-amber-50 p-2 text-black"
                             >
                                 CANCELAR
                             </button>
                             <button
                                 onClick={handleSaveFavoritesToCollection}
                                 disabled={selectedFavoritesToAdd.length === 0}
-                                className="btn-primary flex-1 py-3 text-xs tracking-widest disabled:opacity-50  bg-amber-50 p-2"
+                                className="btn-primary flex-1 py-3 text-xs tracking-widest disabled:opacity-50 bg-amber-50 p-2 text-black"
                             >
                                 AÑADIR {selectedFavoritesToAdd.length > 0 ? `(${selectedFavoritesToAdd.length})` : ''}
                             </button>
@@ -1212,7 +1212,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                                             alt="Preview"
                                         />
                                     </div>
-                                    <label className="cursor-pointer bg-white border-2 border-black px-3 py-1 text-[10px] font-bold uppercase hover:bg-gray-100 transition-all shadow-retro-sm active:translate-y-0.5">
+                                    <label className="cursor-pointer bg-white border-2 border-black px-3 py-1 text-[10px] font-bold uppercase hover:bg-gray-100 transition-all shadow-retro-sm active:translate-y-0.5 text-black">
                                         Cambiar Foto
                                         <input
                                             type="file"
@@ -1225,7 +1225,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
 
                                 <div className="flex-1 w-full space-y-4">
                                     <div>
-                                        <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-secondary dark:text-[#b9a89d]">
+                                        <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-black">
                                             Nombre de Usuario
                                         </label>
                                         <input
@@ -1238,7 +1238,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                                     </div>
 
                                     <div>
-                                        <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-secondary dark:text-[#b9a89d]">
+                                        <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-black">
                                             Especialidad (Rol)
                                         </label>
                                         <select
@@ -1255,7 +1255,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                             </div>
 
                             <div>
-                                <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-secondary dark:text-[#b9a89d]">
+                                <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-black">
                                     Biografía
                                 </label>
                                 <textarea
@@ -1267,7 +1267,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                             </div>
 
                             <div>
-                                <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-primary">
+                                <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-black">
                                     Nueva Contraseña (opcional)
                                 </label>
                                 <input
@@ -1283,14 +1283,14 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                                 <button
                                     type="button"
                                     onClick={() => setIsEditModalOpen(false)}
-                                    className="btn-cancel flex-1 py-3 text-xs tracking-widest bg-amber-50 p-2"
+                                    className="btn-cancel flex-1 py-3 text-xs tracking-widest bg-amber-50 p-2 text-black"
                                 >
                                     CANCELAR
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={updateLoading}
-                                    className="btn-primary flex-1 py-3 text-xs tracking-widest bg-amber-50 p-2"
+                                    className="btn-primary flex-1 py-3 text-xs tracking-widest bg-amber-50 p-2 text-black"
                                 >
                                     {updateLoading ? 'GUARDANDO...' : 'GUARDAR CAMBIOS'}
                                 </button>

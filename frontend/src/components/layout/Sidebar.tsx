@@ -209,7 +209,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div className="pt-4 mt-auto">
                     <button
                         onClick={() => setIsMobileExpanded(false)}
-                        className="w-full btn-primary py-4 flex items-center justify-center gap-2 group"
+                        className="w-full btn-primary py-4 flex items-center justify-center gap-2 group text-black"
                     >
                         <span translate="no" className="material-symbols-outlined notranslate group-hover:rotate-12 transition-transform">search_check</span>
                         <span>BUSCAR AHORA</span>

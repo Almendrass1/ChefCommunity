@@ -173,7 +173,7 @@ const CreateRecipe: React.FC<CreateRecipeProps> = ({ onCancel, onSuccess, token,
                 <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="md:col-span-2">
-                            <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-[#5D4037] dark:text-[#b9a89d]">
+                            <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-black">
                                 Nombre de la Receta
                             </label>
                             <input
@@ -187,7 +187,7 @@ const CreateRecipe: React.FC<CreateRecipeProps> = ({ onCancel, onSuccess, token,
                         </div>
 
                         <div className="md:col-span-2">
-                            <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-[#5D4037] dark:text-[#b9a89d]">
+                            <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-black">
                                 Foto de Portada {initialRecipe && '(Opcional)'}
                             </label>
                             <input
@@ -199,7 +199,7 @@ const CreateRecipe: React.FC<CreateRecipeProps> = ({ onCancel, onSuccess, token,
                         </div>
 
                         <div className="md:col-span-2">
-                            <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-[#5D4037] dark:text-[#b9a89d]">
+                            <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-black">
                                 Descripción
                             </label>
                             <textarea
@@ -211,7 +211,7 @@ const CreateRecipe: React.FC<CreateRecipeProps> = ({ onCancel, onSuccess, token,
                         </div>
 
                         <div>
-                            <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-[#5D4037] dark:text-[#b9a89d]">
+                            <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-black">
                                 Categoría
                             </label>
                             <select
@@ -226,7 +226,7 @@ const CreateRecipe: React.FC<CreateRecipeProps> = ({ onCancel, onSuccess, token,
                         </div>
 
                         <div>
-                            <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-[#5D4037] dark:text-[#b9a89d]">
+                            <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-black">
                                 Dificultad
                             </label>
                             <select
@@ -241,7 +241,7 @@ const CreateRecipe: React.FC<CreateRecipeProps> = ({ onCancel, onSuccess, token,
                         </div>
 
                         <div>
-                            <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-[#5D4037] dark:text-[#b9a89d]">
+                            <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-black">
                                 Tiempo Prep (min)
                             </label>
                             <input
@@ -253,7 +253,7 @@ const CreateRecipe: React.FC<CreateRecipeProps> = ({ onCancel, onSuccess, token,
                         </div>
 
                         <div>
-                            <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-[#5D4037] dark:text-[#b9a89d]">
+                            <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-black">
                                 Calorías
                             </label>
                             <input
@@ -266,7 +266,7 @@ const CreateRecipe: React.FC<CreateRecipeProps> = ({ onCancel, onSuccess, token,
                     </div>
 
                     <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-[#3d2a24]">
-                        <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-[#5D4037] dark:text-[#b9a89d]">
+                        <label className="block font-mono text-xs font-bold uppercase tracking-wider mb-2 text-black">
                             Ingredientes
                         </label>
 
@@ -399,7 +399,7 @@ const CreateRecipe: React.FC<CreateRecipeProps> = ({ onCancel, onSuccess, token,
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 bg-primary hover:bg-[#d95d00] text-white font-bold uppercase py-3 border-2 border-black transition-all shadow-retro-sm active:translate-y-0.5 active:shadow-none tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 bg-primary hover:bg-[#d95d00] text-black font-bold uppercase py-3 border-2 border-black transition-all shadow-retro-sm active:translate-y-0.5 active:shadow-none tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? 'GRABANDO...' : (initialRecipe ? 'ACTUALIZAR CINTA' : 'PUBLICAR CINTA')}
                         </button>
