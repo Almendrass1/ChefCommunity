@@ -3,11 +3,12 @@ import { api } from '../services/api';
 import { Recipe, User } from '../types';
 
 interface AdminViewProps {
+    token: string | null;
     onEditRecipe: (recipe: Recipe) => void;
     onUserClick: (user: User) => void;
 }
 
-const AdminView: React.FC<AdminViewProps> = ({ onEditRecipe, onUserClick }) => {
+const AdminView: React.FC<AdminViewProps> = ({ token, onEditRecipe, onUserClick }) => {
     const [activeTab, setActiveTab] = useState<'recipes' | 'users'>('recipes');
     const [users, setUsers] = useState<any[]>([]);
     const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -65,13 +66,13 @@ const AdminView: React.FC<AdminViewProps> = ({ onEditRecipe, onUserClick }) => {
             <div className="flex gap-4 mb-8">
                 <button 
                   onClick={() => setActiveTab('recipes')} 
-                  className={`px-6 py-3 font-bold uppercase tracking-wider text-sm border-2 border-black rounded shadow-retro-sm transition-all ${activeTab === 'recipes' ? 'bg-primary text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+                  className={`px-6 py-3 font-bold uppercase tracking-wider text-sm border-2 border-black rounded shadow-retro-sm transition-all ${activeTab === 'recipes' ? 'bg-primary text-black' : 'bg-white text-black hover:bg-gray-100'}`}
                 >
                     Gestión de Recetas
                 </button>
                 <button 
                   onClick={() => setActiveTab('users')} 
-                  className={`px-6 py-3 font-bold uppercase tracking-wider text-sm border-2 border-black rounded shadow-retro-sm transition-all ${activeTab === 'users' ? 'bg-primary text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+                  className={`px-6 py-3 font-bold uppercase tracking-wider text-sm border-2 border-black rounded shadow-retro-sm transition-all ${activeTab === 'users' ? 'bg-primary text-black' : 'bg-white text-black hover:bg-gray-100'}`}
                 >
                     Gestión de Usuarios
                 </button>
@@ -109,7 +110,35 @@ const AdminView: React.FC<AdminViewProps> = ({ onEditRecipe, onUserClick }) => {
                                         </span>
                                     </td>
                                     <td className="p-4">{u.recipes_count || 0}</td>
-                                    <td className="p-4 text-right">
+                                    <td className="p-4 text-right flex items-center justify-end gap-2">
+                                        <select 
+                                            value={u.rol} 
+                                            onChange={async (e) => {
+                                                const newRol = e.target.value;
+                                                try {
+                                                    // This assumes there's an endpoint to update user roles or the general user update endpoint works for admin
+                                                    // If not, we might need to add a specific admin update call
+                                                    const formData = new FormData();
+                                                    formData.append('rol', newRol);
+                                                    const res = await fetch(`/api/users/${u.id}`, {
+                                                        method: 'PUT',
+                                                        headers: { 'Authorization': `Bearer ${token}` },
+                                                        body: formData
+                                                    });
+                                                    if (res.ok) {
+                                                        setUsers(users.map(user => user.id === u.id ? { ...user, rol: newRol } : user));
+                                                    }
+                                                } catch (err) {
+                                                    console.error(err);
+                                                }
+                                            }}
+                                            className="bg-gray-100 border border-black text-[10px] p-1 font-bold rounded uppercase"
+                                        >
+                                            <option value="aprendiz">Aprendiz</option>
+                                            <option value="saludable">Saludable</option>
+                                            <option value="chef">Chef</option>
+                                            <option value="admin">Admin</option>
+                                        </select>
                                         {u.rol !== 'admin' && (
                                             <button 
                                               onClick={() => handleDeleteUser(u.id)}

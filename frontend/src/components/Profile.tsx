@@ -1185,7 +1185,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
 
             {isEditModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-[#221810] border-4 border-black dark:border-secondary p-8 rounded-xl shadow-retro-lg max-w-lg w-full relative overflow-hidden">
+                    <div className="bg-white dark:bg-[#221810] border-4 border-black dark:border-secondary p-8 rounded-xl shadow-retro-lg max-w-lg w-full relative max-h-[90vh] overflow-y-auto">
                         {/* VHS Scanline */}
                         <div className="absolute inset-0 pointer-events-none opacity-5 bg-[linear-gradient(transparent_50%,rgba(0,0,0,1)_50%)] bg-size-[100%_4px]"></div>
 
@@ -1225,7 +1225,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
 
                                 <div className="flex-1 w-full space-y-4">
                                     <div>
-                                        <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-black">
+                                        <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-black dark:text-white">
                                             Nombre de Usuario
                                         </label>
                                         <input
@@ -1238,7 +1238,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                                     </div>
 
                                     <div>
-                                        <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-black">
+                                        <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-black dark:text-white">
                                             Especialidad (Rol)
                                         </label>
                                         <select
@@ -1255,7 +1255,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                             </div>
 
                             <div>
-                                <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-black">
+                                <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-black dark:text-white">
                                     Biografía
                                 </label>
                                 <textarea
@@ -1267,7 +1267,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                             </div>
 
                             <div>
-                                <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-black">
+                                <label className="block font-mono text-[10px] font-bold uppercase tracking-wider mb-2 text-primary dark:text-orange-400">
                                     Nueva Contraseña (opcional)
                                 </label>
                                 <input

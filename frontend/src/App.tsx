@@ -205,6 +205,7 @@ function App() {
       case 'administracion':
         if (user && user.rol === 'admin') {
             return <AdminView 
+                token={token}
                 onEditRecipe={(recipe) => {
                     setSelectedRecipe(recipe);
                     setCurrentView('update-recipe');
