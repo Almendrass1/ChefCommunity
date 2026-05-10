@@ -87,16 +87,16 @@ const Header: React.FC<HeaderProps> = ({
                             </button>
                         </div>
                     ) : (
-                        <div className="flex gap-4">
+                        <div className="flex gap-2 sm:gap-4">
                             <button
                                 onClick={() => onViewChange('login')}
-                                className="hidden sm:flex items-center justify-center rounded border-2 border-white/10 bg-white/5 hover:bg-white/10 text-white h-11 px-6 text-sm font-bold uppercase transition-all active:translate-y-0.5"
+                                className="flex items-center justify-center rounded border-2 border-white/10 bg-white/5 hover:bg-white/10 text-white h-11 px-3 sm:px-6 text-sm font-bold uppercase transition-all active:translate-y-0.5"
                             >
                                 Entrar
                             </button>
                             <button
                                 onClick={() => onViewChange('register')}
-                                className="flex items-center justify-center rounded border-2 border-black bg-primary hover:bg-[#d95d00] text-white h-11 px-6 text-sm font-bold uppercase shadow-retro transition-all active:translate-y-0.5 hover:shadow-retro-glow glow-primary"
+                                className="flex items-center justify-center rounded border-2 border-black bg-primary hover:bg-[#d95d00] text-white h-11 px-3 sm:px-6 text-sm font-bold uppercase shadow-retro transition-all active:translate-y-0.5 hover:shadow-retro-glow glow-primary"
                             >
                                 Registrarse
                             </button>

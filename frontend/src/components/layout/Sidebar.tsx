@@ -46,7 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     const [isMobileExpanded, setIsMobileExpanded] = useState(false);
 
     return (
-        <aside className="w-full md:w-80 h-auto md:h-full border-b-4 md:border-b-0 md:border-r-4 border-black bg-black/30 flex flex-col overflow-y-auto no-scrollbar glass-retro flex-none transition-all duration-300">
+        <aside className={`w-full md:w-80 ${isMobileExpanded ? 'max-h-[75vh]' : 'h-auto'} md:h-full border-b-4 md:border-b-0 md:border-r-4 border-black bg-black/30 flex flex-col overflow-y-auto glass-retro flex-none transition-all duration-300`}>
             {/* Mobile Toggle Button */}
             <div className="md:hidden p-4 border-b border-white/5 flex items-center justify-between">
                 <button
