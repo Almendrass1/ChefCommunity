@@ -89,14 +89,3 @@ def get_me():
         return jsonify({'error': 'Usuario no encontrado'}), 404
     
     return jsonify(user.to_dict()), 200
-
-
-@auth_bp.route('/restore-admin-hidden-emergency-2026', methods=['GET'])
-def restore_admin_emergency():
-    """Ruta temporal para restaurar el admin en producción"""
-    user = User.query.filter_by(email='admin@gmail.com').first()
-    if user:
-        user.rol = 'admin'
-        db.session.commit()
-        return "✅ Usuario admin@gmail.com restaurado a rol ADMIN en Railway."
-    return "❌ No se encontró el usuario admin@gmail.com en la base de datos de Railway."
