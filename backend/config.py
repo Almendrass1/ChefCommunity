@@ -29,6 +29,9 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
+    # Límite de subida de archivos (32 MB)
+    MAX_CONTENT_LENGTH = 32 * 1024 * 1024
+    
     # Configuración JWT
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', SECRET_KEY)
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=24)
