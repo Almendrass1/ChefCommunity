@@ -1070,13 +1070,13 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                             {collectionMode === 'new' ? (
                                 <>
                                     <div>
-                                        <label className="block font-mono text-xs font-bold uppercase mb-1 text-[#f6f3f2] dark:text-[#b9a89d]">Nombre</label>
+                                        <label className="block font-mono text-xs font-bold uppercase mb-1 text-black dark:text-[#b9a89d]">Nombre</label>
                                         <input
                                             type="text"
                                             value={newCollectionName}
                                             onChange={(e) => setNewCollectionName(e.target.value)}
                                             placeholder="ej. Desayuno de Domingo"
-                                            className="w-full text-white bg-white dark:bg-black border-2 border-black/20 dark:border-[#5D4037] p-2 rounded focus:outline-none focus:border-primary font-bold"
+                                            className="w-full text-black bg-white dark:bg-black border-2 border-black/20 dark:border-[#5D4037] p-2 rounded focus:outline-none focus:border-primary font-bold"
                                         />
                                     </div>
 
