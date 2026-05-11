@@ -37,7 +37,7 @@ def get_profile(user_id):
         return jsonify({'error': str(e), 'trace': traceback.format_exc()}), 500
 
 
-@user_bp.route('/all', methods=['GET'])
+@user_bp.route('/all/', methods=['GET'])
 @jwt_required()
 def get_all_users():
     """Obtiene todos los usuarios (Solo Admin)"""
@@ -57,23 +57,42 @@ def get_all_users():
     return jsonify(users_data)
 
 
-@user_bp.route('/<int:target_user_id>', methods=['DELETE'])
+@user_bp.route('/<int:target_user_id>/', methods=['DELETE', 'PUT'])
 @jwt_required()
-def delete_user(target_user_id):
-    """Elimina un usuario y todo su contenido (Solo Admin)"""
+def manage_user_admin(target_user_id):
+    """Elimina o actualiza un usuario (Solo Admin)"""
     current_user_id = get_jwt_identity()
     current_user = User.query.get(current_user_id)
     
     if not current_user or current_user.rol != 'admin':
         return jsonify({'error': 'No autorizado'}), 403
         
-    if str(current_user_id) == str(target_user_id):
-        return jsonify({'error': 'No puedes eliminarte a ti mismo'}), 400
+    user_to_manage = User.query.get_or_404(target_user_id)
+
+    if request.method == 'DELETE':
+        if str(current_user_id) == str(target_user_id):
+            return jsonify({'error': 'No puedes eliminarte a ti mismo'}), 400
+        db.session.delete(user_to_manage)
+        db.session.commit()
+        return jsonify({'message': 'Usuario eliminado exitosamente'})
         
-    user_to_delete = User.query.get_or_404(target_user_id)
-    db.session.delete(user_to_delete)
-    db.session.commit()
-    return jsonify({'message': 'Usuario eliminado exitosamente'})
+    if request.method == 'PUT':
+        # Soporte para JSON o FormData
+        if request.is_json:
+            data = request.get_json()
+        else:
+            data = request.form
+            
+        if 'rol' in data:
+            if data['rol'] in ['saludable', 'aprendiz', 'chef', 'admin']:
+                user_to_manage.rol = data['rol']
+        
+        if 'username' in data:
+            user_to_manage.username = data['username']
+            
+        db.session.commit()
+        return jsonify({'message': 'Usuario actualizado correctamente', 'user': user_to_manage.to_dict()})
+
 
 
 @user_bp.route('/me/likes', methods=['GET'])

@@ -3,12 +3,11 @@ import { api } from '../services/api';
 import { Recipe, User } from '../types';
 
 interface AdminViewProps {
-    token: string | null;
     onEditRecipe: (recipe: Recipe) => void;
     onUserClick: (user: User) => void;
 }
 
-const AdminView: React.FC<AdminViewProps> = ({ token, onEditRecipe, onUserClick }) => {
+const AdminView: React.FC<AdminViewProps> = ({ onEditRecipe, onUserClick }) => {
     const [activeTab, setActiveTab] = useState<'recipes' | 'users'>('recipes');
     const [users, setUsers] = useState<any[]>([]);
     const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -19,17 +18,20 @@ const AdminView: React.FC<AdminViewProps> = ({ token, onEditRecipe, onUserClick 
         try {
             if (activeTab === 'users') {
                 const data = await api.admin.getUsers();
-                setUsers(data);
+                setUsers(Array.isArray(data) ? data : []);
             } else {
                 const data = await api.recipes.getAll({});
-                setRecipes(data);
+                setRecipes(Array.isArray(data) ? data : []);
             }
         } catch (e) {
             console.error(e);
+            if (activeTab === 'users') setUsers([]);
+            else setRecipes([]);
         } finally {
             setLoading(false);
         }
     };
+
 
     useEffect(() => {
         fetchData();
@@ -111,29 +113,20 @@ const AdminView: React.FC<AdminViewProps> = ({ token, onEditRecipe, onUserClick 
                                     </td>
                                     <td className="p-4">{u.recipes_count || 0}</td>
                                     <td className="p-4 text-right flex items-center justify-end gap-2">
-                                        <select 
-                                            value={u.rol} 
-                                            onChange={async (e) => {
-                                                const newRol = e.target.value;
-                                                try {
-                                                    // This assumes there's an endpoint to update user roles or the general user update endpoint works for admin
-                                                    // If not, we might need to add a specific admin update call
-                                                    const formData = new FormData();
-                                                    formData.append('rol', newRol);
-                                                    const res = await fetch(`/api/users/${u.id}`, {
-                                                        method: 'PUT',
-                                                        headers: { 'Authorization': `Bearer ${token}` },
-                                                        body: formData
-                                                    });
-                                                    if (res.ok) {
-                                                        setUsers(users.map(user => user.id === u.id ? { ...user, rol: newRol } : user));
-                                                    }
-                                                } catch (err) {
-                                                    console.error(err);
-                                                }
-                                            }}
-                                            className="bg-gray-100 border border-black text-[10px] p-1 font-bold rounded uppercase"
-                                        >
+                                         <select 
+                                             value={u.rol} 
+                                             onChange={async (e) => {
+                                                 const newRol = e.target.value;
+                                                 try {
+                                                     await api.admin.updateUser(u.id, { rol: newRol });
+                                                     setUsers(users.map(user => user.id === u.id ? { ...user, rol: newRol } : user));
+                                                 } catch (err) {
+                                                     console.error(err);
+                                                     alert("Error al actualizar el rol del usuario.");
+                                                 }
+                                             }}
+                                             className="bg-gray-100 border border-black text-[10px] p-1 font-bold rounded uppercase cursor-pointer"
+                                         >
                                             <option value="aprendiz">Aprendiz</option>
                                             <option value="saludable">Saludable</option>
                                             <option value="chef">Chef</option>

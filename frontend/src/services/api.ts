@@ -74,6 +74,7 @@ export const api = {
     },
     admin: {
         getUsers: () => request<any[]>('/users/all/'),
+        updateUser: (id: number, data: any) => request<any>(`/users/${id}/`, { method: 'PUT', body: JSON.stringify(data) }),
         deleteUser: (id: number) => request<any>(`/users/${id}/`, { method: 'DELETE' }),
     },
 };
