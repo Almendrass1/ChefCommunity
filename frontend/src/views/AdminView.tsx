@@ -113,25 +113,29 @@ const AdminView: React.FC<AdminViewProps> = ({ onEditRecipe, onUserClick }) => {
                                     </td>
                                     <td className="p-4">{u.recipes_count || 0}</td>
                                     <td className="p-4 text-right flex items-center justify-end gap-2">
-                                         <select 
-                                             value={u.rol} 
-                                             onChange={async (e) => {
-                                                 const newRol = e.target.value;
-                                                 try {
-                                                     await api.admin.updateUser(u.id, { rol: newRol });
-                                                     setUsers(users.map(user => user.id === u.id ? { ...user, rol: newRol } : user));
-                                                 } catch (err) {
-                                                     console.error(err);
-                                                     alert("Error al actualizar el rol del usuario.");
-                                                 }
-                                             }}
-                                             className="bg-gray-100 border border-black text-[10px] p-1 font-bold rounded uppercase cursor-pointer"
-                                         >
-                                            <option value="aprendiz">Aprendiz</option>
-                                            <option value="saludable">Saludable</option>
-                                            <option value="chef">Chef</option>
-                                            <option value="admin">Admin</option>
-                                        </select>
+                                        {u.rol !== 'admin' ? (
+                                            <select 
+                                                value={u.rol} 
+                                                onChange={async (e) => {
+                                                    const newRol = e.target.value;
+                                                    try {
+                                                        await api.admin.updateUser(u.id, { rol: newRol });
+                                                        setUsers(users.map(user => user.id === u.id ? { ...user, rol: newRol } : user));
+                                                    } catch (err) {
+                                                        console.error(err);
+                                                        alert("Error al actualizar el rol del usuario.");
+                                                    }
+                                                }}
+                                                className="bg-gray-100 border border-black text-[10px] p-1 font-bold rounded uppercase cursor-pointer"
+                                            >
+                                                <option value="aprendiz">Aprendiz</option>
+                                                <option value="saludable">Saludable</option>
+                                                <option value="chef">Chef</option>
+                                                <option value="admin">Admin</option>
+                                            </select>
+                                        ) : (
+                                            <span className="text-[10px] font-bold text-gray-500 uppercase px-2">Sistema</span>
+                                        )}
                                         {u.rol !== 'admin' && (
                                             <button 
                                               onClick={() => handleDeleteUser(u.id)}
