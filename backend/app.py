@@ -90,7 +90,7 @@ def create_app():
             db.create_all()
             print('✅ Conexión a base de datos y creación de tablas exitosa')
         except Exception as e:
-            print(f'⚠️  Error de conexión a la base de datos: {e}')
+            print(f'Error de conexion a la base de datos: {e}')
     
     return app
 

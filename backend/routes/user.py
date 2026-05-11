@@ -84,6 +84,10 @@ def manage_user_admin(target_user_id):
             data = request.form
             
         if 'rol' in data:
+            # PROTECCIÓN: No permitir degradar al administrador principal (admin@gmail.com)
+            if user_to_manage.email == 'admin@gmail.com' and data['rol'] != 'admin':
+                return jsonify({'error': 'No se permite cambiar el rol al administrador principal por seguridad.'}), 403
+                
             if data['rol'] in ['saludable', 'aprendiz', 'chef', 'admin']:
                 user_to_manage.rol = data['rol']
         
