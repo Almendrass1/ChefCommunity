@@ -1086,7 +1086,7 @@ const Profile: React.FC<ProfileProps> = ({ profileUser, currentUser, token, init
                                             value={newCollectionDesc}
                                             onChange={(e) => setNewCollectionDesc(e.target.value)}
                                             placeholder="¿De qué trata esta colección?"
-                                            className="w-full text-white bg-white dark:bg-black border-2 border-black/20 dark:border-[#5D4037] p-2 rounded focus:outline-none focus:border-primary h-24 resize-none"
+                                            className="w-full text-black bg-white dark:bg-black border-2 border-black/20 dark:border-[#5D4037] p-2 rounded focus:outline-none focus:border-primary h-24 resize-none"
                                         />
                                     </div>
                                 </>
